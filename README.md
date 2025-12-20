@@ -2,22 +2,33 @@
 
 Cut through compiler noise. See what really matters.
 
-A build output analyzer for C/C++ projects that transforms raw compiler output into clear, actionable insight.
+A modular build output analyzer for C/C++ projects that transforms raw compiler output into clear, actionable insight.
 
 ## Overview
 
-`noisecut` is a Python-based build wrapper that parses GCC/Clang compiler output and provides:
+`noisecut` is a Python-based build analysis tool that parses GCC/Clang/AVR-GCC compiler output and provides:
 
+- **Automatic compiler detection** - recognizes GCC, Clang, AVR-GCC automatically
 - **Colorized output** with ANSI codes for better readability
 - **Error/warning grouping** - groups identical issues across files
 - **Build statistics** - tracks files compiled, warnings, errors, and duration
+- **Modular architecture** - easily extensible with new parsers
 - **Clean summary** - hides verbose compiler flags, shows only essentials
 
 ## Features
 
+### Automatic Compiler Detection
+
+Automatically detects the compiler being used and applies the appropriate parser:
+- GCC/G++
+- Clang/Clang++
+- AVR-GCC (for embedded systems)
+
+No need to manually specify the compiler type!
+
 ### Intelligent Output Parsing
 
-Parses GCC/Clang compiler output and identifies:
+Parses compiler output and identifies:
 - Compilation actions (`[CC]`)
 - MOC generation (`[MOC]`) for Qt projects
 - Warnings and errors with file locations
@@ -53,16 +64,18 @@ No installation required. Simply ensure you have Python 3.7+ installed:
 python3 --version
 ```
 
-The script uses only standard library modules.
+The package uses only standard library modules.
 
 ## Usage
 
 ### Parse Build Output from File
 
-Parse compiler output that was saved to a file:
+Parse compiler output that was saved to a file (auto-detects compiler):
 
 ```bash
 ./ncut.py -f build_output.txt
+# or as Python module
+python -m noisecut -f build_output.txt
 ```
 
 This is useful for:
@@ -75,6 +88,8 @@ This is useful for:
 
 ```bash
 ./ncut.py
+# or as Python module
+python -m noisecut
 ```
 
 ### Clean Build
@@ -109,12 +124,23 @@ Show all compiler output instead of just the summary:
 ./ncut.py --max-locations 10
 ```
 
+### Manual Parser Selection
+
+By default, noisecut auto-detects the compiler. You can override this:
+
+```bash
+./ncut.py --parser gcc -f build_output.txt
+./ncut.py --parser clang -f build_output.txt
+./ncut.py --parser avr-gcc -f build_output.txt
+```
+
 ## Command Line Options
 
 ```
-usage: ncut.py [-h] [-v] [-f FILE] [-j JOBS] [--clean] [--max-locations MAX_LOCATIONS] [target]
+usage: ncut [-h] [-v] [-f FILE] [-j JOBS] [--clean] [--max-locations MAX_LOCATIONS] 
+            [--parser {auto,gcc,clang,avr-gcc}] [target]
 
-Build output analyzer with enhanced error reporting
+Build output analyzer for C/C++ projects
 
 positional arguments:
   target                Make target (default: all)
@@ -127,18 +153,52 @@ optional arguments:
   --clean               Clean before building
   --max-locations MAX_LOCATIONS
                         Maximum locations to show per issue (default: 5)
+  --parser {auto,gcc,clang,avr-gcc}
+                        Parser to use (default: auto-detect)
 ```
+
+## Architecture
+
+The project follows a modular architecture:
+
+```
+noisecut/
+├── __init__.py          # Package exports
+├── __main__.py          # python -m noisecut entry point
+├── cli.py               # CLI logic and main()
+├── model.py             # Data models (BuildIssue, BuildStats)
+├── grouper.py           # Issue grouping logic
+├── reporter.py          # Output formatting
+├── utils.py             # Color codes and helpers
+└── parsers/
+    ├── base.py          # Abstract BaseParser
+    ├── gcc.py           # GCC/G++ parser
+    ├── clang.py         # Clang/Clang++ parser
+    ├── avr_gcc.py       # AVR-GCC parser
+    └── factory.py       # Auto-detection and parser factory
+```
+
+### Adding New Parsers
+
+To add support for a new compiler:
+
+1. Create a new parser in `noisecut/parsers/your_compiler.py`
+2. Extend `BaseParser` class
+3. Add detection logic in `factory.py`
+4. Register in `parsers/__init__.py`
 
 ## Comparison with Standard Make Output
 
-| Feature | `make -j8` | `ncut.py` |
-|---------|-----------|-----------|
+| Feature | `make -j8` | `ncut` |
+|---------|-----------|--------|
 | See compilation progress | Verbose flags | Clean summary |
 | Group similar warnings | No | Yes |
 | Colorized output | No | Yes |
 | Build statistics | No | Yes |
 | Error summary | Scattered | Grouped at end |
 | Show all locations | Need to scroll | Listed together |
+| Compiler detection | Manual | Automatic |
+| Multiple compilers | Single project | Mixed projects supported |
 
 ## Integration with Existing Build Scripts
 
@@ -150,9 +210,18 @@ cd build && make -j8
 
 # After
 ./ncut.py -j8
+# or
+python -m noisecut -j8
 ```
 
 ## Implementation Details
+
+### Automatic Compiler Detection
+
+The parser automatically detects the compiler by analyzing the first compilation line:
+- Searches for `gcc`, `g++`, `clang`, `clang++`, `avr-gcc`, etc.
+- Switches to the appropriate parser
+- Reports detected compiler at the end of build
 
 ### Parsed Output Patterns
 
@@ -160,7 +229,9 @@ The build wrapper recognizes these compiler output patterns:
 
 1. **Compilation**: 
    ```
-   /usr/bin/clang++ ... -o obj/main.o ../src/main.cpp
+   gcc -c ... -o obj/main.o ../src/main.cpp
+   clang++ -c ... -o window.o ../src/window.cpp
+   avr-gcc -c ... -o sensor.o sensor.c
    ```
 
 2. **MOC Generation**:
@@ -198,7 +269,7 @@ This allows the tool to show:
 
 ## Testing
 
-The project includes a comprehensive test suite. See [tests/README.md](tests/README.md) for details.
+The project includes a comprehensive test suite with 16 unit tests. See [tests/README.md](tests/README.md) for details.
 
 ### Run Tests
 
@@ -213,7 +284,10 @@ pip install -r requirements-dev.txt
 # Run tests
 pytest tests/ -v
 ```
-- Works with GCC and Clang compilers
+
+All tests pass with the modular architecture.
+
+## Pro Tips
 
 ## Pro Tips
 
