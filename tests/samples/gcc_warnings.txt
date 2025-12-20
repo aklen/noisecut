@@ -1,0 +1,23 @@
+g++ -c -pipe -O2 -Wall -Wextra -std=gnu++11 -o main.o ../src/main.cpp
+g++ -c -pipe -O2 -Wall -Wextra -std=gnu++11 -o utils.o ../src/utils.cpp
+../src/utils.cpp:45:23: warning: unused parameter 'flags' [-Wunused-parameter]
+void processData(int flags, const char* data) {
+                      ^
+../src/utils.cpp:67:15: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+    if (count < buffer.size()) {
+        ~~~~~~^~~~~~~~~~~~~~~
+../src/main.cpp:123:5: warning: unused variable 'result' [-Wunused-variable]
+    int result = calculate();
+        ^~~~~~
+../src/utils.cpp:89:10: warning: unused parameter 'options' [-Wunused-parameter]
+int parse(int options) {
+             ^~~~~~~
+g++ -c -pipe -O2 -Wall -Wextra -std=gnu++11 -o parser.o ../src/parser.cpp
+../src/parser.cpp:234:1: warning: control reaches end of non-void function [-Wreturn-type]
+}
+^
+../src/parser.cpp:156:12: warning: unused variable 'temp' [-Wunused-variable]
+    double temp = 3.14;
+           ^~~~
+g++ -o myapp main.o utils.o parser.o
+make: *** [myapp] Build complete

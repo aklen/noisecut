@@ -57,7 +57,21 @@ The script uses only standard library modules.
 
 ## Usage
 
-### Basic Build
+### Parse Build Output from File
+
+Parse compiler output that was saved to a file:
+
+```bash
+./ncut.py -f build_output.txt
+```
+
+This is useful for:
+- Analyzing builds from CI/CD pipelines
+- Reviewing historical build logs
+- Testing and debugging the parser
+- Sharing build analysis with team members
+
+### Run Live Build
 
 ```bash
 ./ncut.py
@@ -98,9 +112,9 @@ Show all compiler output instead of just the summary:
 ## Command Line Options
 
 ```
-usage: ncut.py [-h] [-v] [-j JOBS] [--clean] [--max-locations MAX_LOCATIONS] [target]
+usage: ncut.py [-h] [-v] [-f FILE] [-j JOBS] [--clean] [--max-locations MAX_LOCATIONS] [target]
 
-Build wrapper with enhanced error reporting
+Build output analyzer with enhanced error reporting
 
 positional arguments:
   target                Make target (default: all)
@@ -108,6 +122,7 @@ positional arguments:
 optional arguments:
   -h, --help            Show this help message and exit
   -v, --verbose         Show all compiler output (not just summary)
+  -f FILE, --file FILE  Parse compiler output from file instead of running build
   -j JOBS, --jobs JOBS  Number of parallel jobs (default: 8)
   --clean               Clean before building
   --max-locations MAX_LOCATIONS
@@ -179,6 +194,25 @@ This allows the tool to show:
 
 - Python 3.7+
 - No additional packages required (uses only stdlib)
+- Works with GCC, Clang, AVR-GCC, and other compatible compilers
+
+## Testing
+
+The project includes a comprehensive test suite. See [tests/README.md](tests/README.md) for details.
+
+### Run Tests
+
+```bash
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install test dependencies
+pip install -r requirements-dev.txt
+
+# Run tests
+pytest tests/ -v
+```
 - Works with GCC and Clang compilers
 
 ## Pro Tips

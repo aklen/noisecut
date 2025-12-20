@@ -1,0 +1,18 @@
+/opt/homebrew/share/qt/libexec/moc -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -o moc_mainwindow.cpp ../src/mainwindow.h
+clang++ -c -pipe -O2 -std=gnu++11 -Wall -W -DQT_NO_DEBUG -DQT_WIDGETS_LIB -o mainwindow.o ../src/mainwindow.cpp
+clang++ -c -pipe -O2 -std=gnu++11 -Wall -W -DQT_NO_DEBUG -DQT_WIDGETS_LIB -o moc_mainwindow.o moc_mainwindow.cpp
+../src/mainwindow.cpp:145:10: warning: 'showEvent' overrides a member function but is not marked 'override' [-Winconsistent-missing-override]
+    void showEvent(QShowEvent* event) {
+         ^
+/opt/homebrew/include/QtWidgets/qwidget.h:789:18: note: overridden virtual function is here
+    virtual void showEvent(QShowEvent *event);
+                 ^
+/opt/homebrew/share/qt/libexec/moc -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -o moc_dialog.cpp ../src/dialog.h
+clang++ -c -pipe -O2 -std=gnu++11 -Wall -W -DQT_NO_DEBUG -DQT_WIDGETS_LIB -o dialog.o ../src/dialog.cpp
+../src/dialog.cpp:67:10: warning: 'closeEvent' overrides a member function but is not marked 'override' [-Winconsistent-missing-override]
+    void closeEvent(QCloseEvent* event) {
+         ^
+/opt/homebrew/include/QtWidgets/qwidget.h:793:18: note: overridden virtual function is here
+    virtual void closeEvent(QCloseEvent *event);
+                 ^
+clang++ -o myqtapp mainwindow.o moc_mainwindow.o dialog.o moc_dialog.o -F/opt/homebrew/lib -framework QtWidgets -framework QtGui -framework QtCore
