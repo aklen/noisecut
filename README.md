@@ -4,6 +4,8 @@ Cut through compiler noise. See what really matters.
 
 A modular build output analyzer for C/C++ projects that transforms raw compiler output into clear, actionable insight.
 
+**Keywords:** C++, C, build tools, compiler diagnostics, clang, gcc, build log analysis, warning aggregation, developer tooling, CI, command-line tools
+
 ## Overview
 
 `noisecut` is a Python-based build analysis tool that parses GCC/Clang/AVR-GCC compiler output and provides:
@@ -14,6 +16,8 @@ A modular build output analyzer for C/C++ projects that transforms raw compiler 
 - **Build statistics** - tracks files compiled, warnings, errors, and duration
 - **Modular architecture** - easily extensible with new parsers
 - **Clean summary** - hides verbose compiler flags, shows only essentials
+
+noisecut is not a linter or static analyzer — it works purely on compiler output and build logs.
 
 ## Features
 
@@ -286,8 +290,6 @@ pytest tests/ -v
 ```
 
 All tests pass with the modular architecture.
-
-## Pro Tips
 
 ## Pro Tips
 
