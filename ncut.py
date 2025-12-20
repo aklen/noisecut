@@ -81,7 +81,7 @@ class BuildOutputParser:
     
     # Patterns for compiler output
     COMPILE_PATTERN = re.compile(
-        r'^\s*(?:.*?/)?clang\+\+.*?-o\s+(\S+)\s+(\S+)$'
+        r'^\s*(?:.*?/)?(g\+\+|gcc|clang\+\+|clang|avr-gcc|avr-g\+\+).*?-o\s+(\S+)\s+(\S+)$'
     )
     
     MOC_PATTERN = re.compile(
@@ -113,8 +113,8 @@ class BuildOutputParser:
         compile_match = self.COMPILE_PATTERN.match(line)
         if compile_match:
             self.stats.files_compiled += 1
-            output_file = Path(compile_match.group(1)).name
-            source_file = Path(compile_match.group(2)).name
+            output_file = Path(compile_match.group(2)).name
+            source_file = Path(compile_match.group(3)).name
             return f"{Color.CYAN}[CC]{Color.NC} {source_file} → {output_file}"
         
         # Check for MOC
@@ -295,6 +295,45 @@ def print_stats(stats: BuildStats, success: bool):
     print(f"{Color.BOLD}{'─' * 60}{Color.NC}")
 
 
+def parse_from_file(file_path: str, verbose: bool = False) -> Tuple[int, BuildStats, List[BuildIssue]]:
+    """Parse compiler output from a file"""
+    import time
+    
+    parser = BuildOutputParser()
+    start_time = time.time()
+    
+    print(f"{Color.BOLD}Parsing file:{Color.NC} {file_path}\n")
+    
+    try:
+        with open(file_path, 'r') as f:
+            for line in f:
+                line = line.rstrip()
+                
+                # Parse line
+                formatted = parser.parse_line(line)
+                
+                # Print if verbose or it's a formatted message
+                if verbose:
+                    print(line)
+                elif formatted:
+                    print(formatted)
+        
+        # Assume success if we could parse the file
+        return_code = 0 if parser.stats.errors == 0 else 1
+        
+    except FileNotFoundError:
+        print(f"{Color.RED}Error: File not found: {file_path}{Color.NC}")
+        return 1, parser.stats, []
+    except KeyboardInterrupt:
+        print(f"\n{Color.YELLOW}Parsing interrupted{Color.NC}")
+        return 130, parser.stats, []
+    
+    parser.finalize()
+    parser.stats.duration = time.time() - start_time
+    
+    return return_code, parser.stats, parser.issues
+
+
 def run_build(command: List[str], verbose: bool = False) -> Tuple[int, BuildStats, List[BuildIssue]]:
     """Run build command and parse output"""
     import time
@@ -345,12 +384,18 @@ def main():
     import argparse
     
     parser = argparse.ArgumentParser(
-        description='Build wrapper for gnss_controller with enhanced error reporting'
+        description='Build output analyzer for C/C++ projects'
     )
     parser.add_argument(
         '-v', '--verbose',
         action='store_true',
         help='Show all compiler output (not just summary)'
+    )
+    parser.add_argument(
+        '-f', '--file',
+        type=str,
+        metavar='FILE',
+        help='Parse compiler output from file instead of running build'
     )
     parser.add_argument(
         '-j', '--jobs',
@@ -378,28 +423,32 @@ def main():
     
     args = parser.parse_args()
     
-    # Change to build directory if not already there
-    if not os.path.exists('Makefile'):
-        if os.path.exists('build/Makefile'):
-            os.chdir('build')
-            print(f"{Color.CYAN}Changed to build directory{Color.NC}\n")
-        else:
-            print(f"{Color.RED}Error: No Makefile found. Run qmake first.{Color.NC}")
-            return 1
-    
-    # Clean if requested
-    if args.clean:
-        print(f"{Color.YELLOW}Cleaning...{Color.NC}")
-        subprocess.run(['make', 'clean'], capture_output=True)
-        print()
-    
-    # Build command
-    command = ['make', f'-j{args.jobs}']
-    if args.target:
-        command.append(args.target)
-    
-    # Run build
-    return_code, stats, issues = run_build(command, args.verbose)
+    # Parse from file if specified
+    if args.file:
+        return_code, stats, issues = parse_from_file(args.file, args.verbose)
+    else:
+        # Change to build directory if not already there
+        if not os.path.exists('Makefile'):
+            if os.path.exists('build/Makefile'):
+                os.chdir('build')
+                print(f"{Color.CYAN}Changed to build directory{Color.NC}\n")
+            else:
+                print(f"{Color.RED}Error: No Makefile found. Run qmake first.{Color.NC}")
+                return 1
+        
+        # Clean if requested
+        if args.clean:
+            print(f"{Color.YELLOW}Cleaning...{Color.NC}")
+            subprocess.run(['make', 'clean'], capture_output=True)
+            print()
+        
+        # Build command
+        command = ['make', f'-j{args.jobs}']
+        if args.target:
+            command.append(args.target)
+        
+        # Run build
+        return_code, stats, issues = run_build(command, args.verbose)
     
     # Print issues if any
     if issues:

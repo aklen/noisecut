@@ -1,0 +1,20 @@
+gcc -c -Wall -Wextra -std=c11 -o server.o server.c
+server.c:234:10: error: 'struct sockaddr_in' has no member named 'sin_family'
+    addr.sin_family = AF_INET;
+         ^
+server.c:235:10: error: 'struct sockaddr_in' has no member named 'sin_port'
+    addr.sin_port = htons(8080);
+         ^
+server.c:156:5: warning: implicit declaration of function 'socket' [-Wimplicit-function-declaration]
+    socket(AF_INET, SOCK_STREAM, 0);
+    ^
+server.c:178:9: error: unknown type name 'socklen_t'
+        socklen_t addr_len = sizeof(client_addr);
+        ^
+3 errors generated.
+make: *** [server.o] Error 1
+make: *** Waiting for unfinished jobs....
+gcc -c -Wall -Wextra -std=c11 -o utils.o utils.c
+utils.c:89:5: warning: unused variable 'buffer' [-Wunused-variable]
+    char buffer[256];
+         ^

@@ -1,0 +1,32 @@
+clang++ -c -std=c++14 -stdlib=libc++ -Wall -Wextra -o window.o ../src/window.cpp
+clang++ -c -std=c++14 -stdlib=libc++ -Wall -Wextra -o controller.o ../src/controller.cpp
+../src/controller.cpp:78:10: warning: 'initialize' overrides a member function but is not marked 'override' [-Winconsistent-missing-override]
+    void initialize() {
+         ^
+../include/base.h:23:18: note: overridden virtual function is here
+    virtual void initialize() = 0;
+                 ^
+../src/window.cpp:145:23: warning: unused parameter 'event' [-Wunused-parameter]
+void handleEvent(Event* event) {
+                      ^
+../src/controller.cpp:234:5: warning: unused variable 'status' [-Wunused-variable]
+    int status = 0;
+        ^
+../src/window.cpp:289:10: warning: 'onResize' overrides a member function but is not marked 'override' [-Winconsistent-missing-override]
+    void onResize(int w, int h) {
+         ^
+../include/window_base.h:45:18: note: overridden virtual function is here
+    virtual void onResize(int width, int height);
+                 ^
+clang++ -c -std=c++14 -stdlib=libc++ -Wall -Wextra -o manager.o ../src/manager.cpp
+../src/manager.cpp:67:23: error: no matching function for call to 'clamp'
+    int value = std::clamp(input, 0, maxSize - 1);
+                     ^~~~~
+/usr/include/c++/v1/algorithm:2345:1: note: candidate template ignored: deduced conflicting types for parameter 'T' ('int' vs. 'unsigned long')
+clamp(const T& __v, const T& __lo, const T& __hi)
+^
+../src/manager.cpp:89:15: warning: comparison of integers of different signs: 'int' and 'size_t' (aka 'unsigned long') [-Wsign-compare]
+    if (index < items.size()) {
+        ~~~~~ ^ ~~~~~~~~~~~~
+1 warning and 1 error generated.
+make: *** [manager.o] Error 1

@@ -1,0 +1,34 @@
+avr-gcc -c -mmcu=atmega328p -DF_CPU=16000000UL -Os -Wall -o main.o main.c
+avr-gcc -c -mmcu=atmega328p -DF_CPU=16000000UL -Os -Wall -o uart.o uart.c
+uart.c:45:6: warning: unused variable 'dummy' [-Wunused-variable]
+  char dummy;
+       ^
+uart.c:67:23: warning: implicit declaration of function 'UDR0' [-Wimplicit-function-declaration]
+  unsigned char data = UDR0;
+                       ^
+main.c:123:5: warning: unused parameter 'argc' [-Wunused-parameter]
+int main(int argc, char** argv) {
+         ^
+avr-gcc -c -mmcu=atmega328p -DF_CPU=16000000UL -Os -Wall -o sensor.o sensor.c
+sensor.c:89:10: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+  if (val < MAX_VALUE) {
+      ~~~~^~~~~~~~~~~~
+sensor.c:145:3: warning: #warning "Using default calibration values" [-Wcpp]
+ #warning "Using default calibration values"
+   ^
+sensor.c:234:1: warning: control reaches end of non-void function [-Wreturn-type]
+}
+^
+avr-gcc -mmcu=atmega328p -o firmware.elf main.o uart.o sensor.o
+avr-size --mcu=atmega328p --format=avr firmware.elf
+AVR Memory Usage
+----------------
+Device: atmega328p
+
+Program:    2456 bytes (7.5% Full)
+(.text + .data + .bootloader)
+
+Data:        147 bytes (7.2% Full)
+(.data + .bss + .noinit)
+
+avr-objcopy -O ihex -R .eeprom firmware.elf firmware.hex
