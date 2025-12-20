@@ -8,6 +8,7 @@ __author__ = "aklen"
 from .model import BuildIssue, GroupedIssue, BuildStats
 from .grouper import group_issues
 from .parsers.base import BaseParser
+from .severity import Severity, get_severity
 
 __all__ = [
     "BuildIssue",
@@ -15,4 +16,6 @@ __all__ = [
     "BuildStats",
     "group_issues",
     "BaseParser",
+    "Severity",
+    "get_severity",
 ]

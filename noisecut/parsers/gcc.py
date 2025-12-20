@@ -19,6 +19,11 @@ class GccParser(BaseParser):
         r'^\s*(?:.*?/)?(g\+\+|gcc|clang\+\+|clang|avr-gcc|avr-g\+\+).*?-o\s+(\S+)\s+(\S+)$'
     )
     
+    # Pattern for make output with bullet points (e.g., "• Compiling src/main.c")
+    MAKE_COMPILE_PATTERN = re.compile(
+        r'^\s*[•▪◦-]\s+(?:Compiling|Building)\s+(.+)$'
+    )
+    
     MOC_PATTERN = re.compile(
         r'^\s*(?:.*?/)?moc\s+.*?-o\s+(\S+)\s+(\S+)$'
     )
@@ -26,6 +31,16 @@ class GccParser(BaseParser):
     # Issue patterns
     ISSUE_PATTERN = re.compile(
         r'^(.*?):(\d+):(\d+):\s+(warning|error):\s+(.+?)(?:\s+\[([-\w]+)\])?$'
+    )
+    
+    # Linker error pattern (e.g., /path/file.c:211:(...): undefined reference to `symbol`)
+    LINKER_ERROR_PATTERN = re.compile(
+        r'^(.*?):(\d+):\([^)]+\):\s+(.+)$'
+    )
+    
+    # Generic error pattern (e.g., collect2: error: ld returned 1 exit status)
+    GENERIC_ERROR_PATTERN = re.compile(
+        r'^collect2:\s+error:\s+(.+)$'
     )
     
     NOTE_PATTERN = re.compile(
@@ -46,6 +61,15 @@ class GccParser(BaseParser):
             output_file = compile_match.group(2)
             source_file = compile_match.group(3)
             return self._format_compilation(source_file, output_file)
+        
+        # Check for make-style compilation output (• Compiling src/main.c)
+        make_compile_match = self.MAKE_COMPILE_PATTERN.match(line)
+        if make_compile_match:
+            self.stats.files_compiled += 1
+            source_file = make_compile_match.group(1)
+            # Extract just the filename for display
+            file_name = Path(source_file).name
+            return f"{Color.CYAN}[CC]{Color.NC} {source_file}"
         
         # Check for MOC
         moc_match = self.MOC_PATTERN.match(line)
@@ -80,6 +104,35 @@ class GccParser(BaseParser):
                 self.stats.errors += 1
             
             return None  # Will be formatted later when grouped
+        
+        # Check for linker errors (e.g., /path/file.c:211:(...): undefined reference)
+        linker_match = self.LINKER_ERROR_PATTERN.match(line)
+        if linker_match:
+            file_path, line_num, message = linker_match.groups()
+            
+            # Save previous issue
+            if self.current_issue:
+                self.issues.append(self.current_issue)
+            
+            # Create new error issue
+            self.current_issue = BuildIssue(
+                type='error',
+                file=file_path,
+                line=int(line_num),
+                column=0,
+                message=message,
+                category=""
+            )
+            
+            self.stats.errors += 1
+            return None
+        
+        # Check for generic errors (e.g., collect2: error: ld returned 1 exit status)
+        generic_error_match = self.GENERIC_ERROR_PATTERN.match(line)
+        if generic_error_match:
+            # Don't create a new issue, just note that build failed
+            # The actual linker error was already captured above
+            return None
         
         # Check for notes (additional context)
         note_match = self.NOTE_PATTERN.match(line)

@@ -158,6 +158,11 @@ def main():
         help='Maximum locations to show per issue (default: 5)'
     )
     parser.add_argument(
+        '--no-severity',
+        action='store_true',
+        help='Disable severity level display for warnings'
+    )
+    parser.add_argument(
         '--parser',
         type=str,
         choices=['auto', 'gcc', 'clang', 'avr-gcc'],
@@ -217,7 +222,7 @@ def main():
         print(f"{Color.BOLD}{'=' * 60}{Color.NC}")
         
         grouped = group_issues(issues)
-        print_issue_summary(grouped, args.max_locations)
+        print_issue_summary(grouped, args.max_locations, show_severity=not args.no_severity)
     
     # Print statistics
     print_build_stats(stats, return_code == 0)

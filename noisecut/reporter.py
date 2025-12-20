@@ -7,6 +7,7 @@ from pathlib import Path
 
 from .model import GroupedIssue, BuildStats
 from .utils import Color, get_terminal_width
+from .severity import get_severity, get_severity_color, Severity
 
 
 def format_issue_location(file_path: str, line: int, column: int) -> str:
@@ -38,13 +39,15 @@ def format_issue_location(file_path: str, line: int, column: int) -> str:
     return f"{file_str}:{line}:{column}"
 
 
-def print_issue_summary(grouped_issues: List[GroupedIssue], max_locations: int = 5):
+def print_issue_summary(grouped_issues: List[GroupedIssue], max_locations: int = 5, 
+                        show_severity: bool = True):
     """
     Print grouped issues with colors and formatting.
     
     Args:
         grouped_issues: List of grouped issues to display
         max_locations: Maximum number of locations to show per issue
+        show_severity: Whether to show severity levels for warnings
     """
     if not grouped_issues:
         return
@@ -54,16 +57,32 @@ def print_issue_summary(grouped_issues: List[GroupedIssue], max_locations: int =
     for group in grouped_issues:
         issue = group.issue
         
-        # Color based on type
+        # Determine severity for warnings
+        severity = None
+        if issue.type == 'warning' and issue.category and show_severity:
+            severity = get_severity(issue.category)
+            severity_color = get_severity_color(severity)
+        
+        # Color based on type (or severity for warnings)
         if issue.type == 'error':
             color = Color.RED
             icon = "✗"
+            header_suffix = ""
         else:
-            color = Color.YELLOW
+            if severity:
+                color = severity_color
+                # Show severity for non-MEDIUM warnings
+                if severity in [Severity.CRITICAL, Severity.HIGH, Severity.LOW, Severity.INFO]:
+                    header_suffix = f" [{severity}]"
+                else:
+                    header_suffix = ""
+            else:
+                color = Color.YELLOW
+                header_suffix = ""
             icon = "⚠"
         
         # Header
-        print(f"\n{color}{Color.BOLD}{icon} {issue.type.upper()}{Color.NC}: {issue.message}")
+        print(f"\n{color}{Color.BOLD}{icon} {issue.type.upper()}{header_suffix}{Color.NC}: {issue.message}")
         
         if issue.category:
             print(f"  {Color.DIM}Category: {issue.category}{Color.NC}")
