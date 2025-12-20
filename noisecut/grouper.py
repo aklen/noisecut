@@ -39,7 +39,10 @@ def group_issues(issues: List[BuildIssue]) -> List[GroupedIssue]:
                 locations=[]
             )
         
-        groups[key_issue].locations.append((issue.file, issue.line, issue.column))
+        # Add location only if not already present (avoid duplicates from multiple TUs)
+        location = (issue.file, issue.line, issue.column)
+        if location not in groups[key_issue].locations:
+            groups[key_issue].locations.append(location)
     
     # Sort by count (most common first)
     return sorted(groups.values(), key=lambda g: g.count, reverse=True)
