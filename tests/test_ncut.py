@@ -6,24 +6,22 @@ import sys
 import os
 from pathlib import Path
 
-# Add parent directory to path to import ncut
+# Add parent directory to path to import noisecut
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import pytest
-from ncut import (
-    BuildOutputParser,
-    BuildIssue,
-    group_issues,
-    parse_from_file
-)
+from noisecut.model import BuildIssue
+from noisecut.parsers.gcc import GccParser
+from noisecut.grouper import group_issues
+from noisecut.cli import parse_from_file
 
 
 class TestBuildOutputParser:
-    """Test the BuildOutputParser class"""
+    """Test the GccParser class"""
     
     def test_parse_gcc_compilation(self):
         """Test parsing GCC compilation line"""
-        parser = BuildOutputParser()
+        parser = GccParser()
         line = "g++ -c -pipe -O2 -Wall -o main.o ../src/main.cpp"
         result = parser.parse_line(line)
         
@@ -34,7 +32,7 @@ class TestBuildOutputParser:
     
     def test_parse_clang_compilation(self):
         """Test parsing Clang compilation line"""
-        parser = BuildOutputParser()
+        parser = GccParser()  # GccParser handles both gcc and clang patterns
         line = "clang++ -c -std=c++14 -stdlib=libc++ -o window.o ../src/window.cpp"
         result = parser.parse_line(line)
         
@@ -44,7 +42,7 @@ class TestBuildOutputParser:
     
     def test_parse_moc_generation(self):
         """Test parsing Qt MOC line"""
-        parser = BuildOutputParser()
+        parser = GccParser()
         line = "/opt/homebrew/share/qt/libexec/moc -DQT_NO_DEBUG -o moc_window.cpp ../src/window.h"
         result = parser.parse_line(line)
         
@@ -54,7 +52,7 @@ class TestBuildOutputParser:
     
     def test_parse_warning(self):
         """Test parsing a warning"""
-        parser = BuildOutputParser()
+        parser = GccParser()
         line = "../src/utils.cpp:45:23: warning: unused parameter 'flags' [-Wunused-parameter]"
         result = parser.parse_line(line)
         
@@ -73,7 +71,7 @@ class TestBuildOutputParser:
     
     def test_parse_error(self):
         """Test parsing an error"""
-        parser = BuildOutputParser()
+        parser = GccParser()
         line = "../src/manager.cpp:67:23: error: no matching function for call to 'clamp'"
         result = parser.parse_line(line)
         
@@ -90,7 +88,7 @@ class TestBuildOutputParser:
     
     def test_parse_note_context(self):
         """Test parsing note (additional context)"""
-        parser = BuildOutputParser()
+        parser = GccParser()
         
         # First parse the warning
         warning_line = "../src/controller.cpp:78:10: warning: 'initialize' overrides a member function but is not marked 'override' [-Winconsistent-missing-override]"
@@ -108,7 +106,7 @@ class TestBuildOutputParser:
     
     def test_multiple_warnings(self):
         """Test parsing multiple warnings"""
-        parser = BuildOutputParser()
+        parser = GccParser()
         
         lines = [
             "../src/utils.cpp:45:23: warning: unused parameter 'flags' [-Wunused-parameter]",
