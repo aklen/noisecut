@@ -1,0 +1,177 @@
+• Compiling src/main.c
+• Compiling src/hal/device_hal.c
+• Compiling src/hal/i2c_hal.c
+• Compiling src/hal/system_hal.c
+src/hal/system_hal.c: In function 'system_hal_init':
+src/hal/system_hal.c:13:29: warning: implicit declaration of function 'serial_printf' [-Wimplicit-function-declaration]
+src/hal/system_hal.c:89:5: note: in expansion of macro 'LOG_DEBUG'
+• Compiling src/hal/serial_hal.c
+• Compiling src/hal/comm_hal.c
+• Compiling src/core/state_engine.c
+• Compiling src/core/modules/primary_module.c
+src/core/modules/primary_module.c: In function 'check_comm_ready':
+src/core/modules/primary_module.c:61:12: warning: implicit declaration of function 'comm_is_ready' [-Wimplicit-function-declaration]
+src/core/modules/primary_module.c: In function 'action_init_sequence':
+src/core/modules/primary_module.c:83:5: warning: implicit declaration of function 'comm_init'; did you mean 'core_init'? [-Wimplicit-function-declaration]
+src/core/modules/primary_module.c: In function 'action_reset_comm':
+src/core/modules/primary_module.c:120:5: warning: implicit declaration of function 'comm_buffer_clear' [-Wimplicit-function-declaration]
+src/core/modules/primary_module.c: In function 'primary_module_update':
+src/core/modules/primary_module.c:254:5: warning: implicit declaration of function 'engine_update' [-Wimplicit-function-declaration]
+• Compiling src/core/modules/secondary_module.c
+• Compiling src/core/modules/radio_module.c
+src/core/modules/radio_module.c: In function 'radio_module_update':
+src/core/modules/radio_module.c:335:5: warning: implicit declaration of function 'engine_update'; did you mean 'radio_module_update'? [-Wimplicit-function-declaration]
+• Compiling src/core/modules/control_module.c
+src/core/modules/control_module.c: In function 'control_module_update':
+src/core/modules/control_module.c:211:5: warning: implicit declaration of function 'engine_update' [-Wimplicit-function-declaration]
+• Compiling src/core/sensors/power_sensor.c
+• Compiling src/driver/i2c.c
+src/driver/i2c.c: In function 'configure_i2c_speed':
+src/driver/i2c.c:30:16: warning: unsigned conversion from 'long int' to 'uint8_t' {aka 'volatile unsigned char'} changes value from '792' to '24' [-Woverflow]
+• Compiling src/driver/serial.c
+• Compiling src/driver/comm_port.c
+src/driver/comm_port.c: In function 'comm_port_write':
+src/driver/comm_port.c:457:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:458:13: note: here
+src/driver/comm_port.c:458:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:459:13: note: here
+src/driver/comm_port.c:459:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:460:13: note: here
+src/driver/comm_port.c:460:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:461:13: note: here
+src/driver/comm_port.c:461:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:462:13: note: here
+src/driver/comm_port.c:462:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:463:13: note: here
+src/driver/comm_port.c:463:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:464:13: note: here
+src/driver/comm_port.c:464:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:465:13: note: here
+src/driver/comm_port.c:465:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:466:13: note: here
+src/driver/comm_port.c:466:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:467:13: note: here
+src/driver/comm_port.c:467:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:468:13: note: here
+src/driver/comm_port.c:468:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:469:13: note: here
+src/driver/comm_port.c:469:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:470:13: note: here
+src/driver/comm_port.c:470:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:471:13: note: here
+src/driver/comm_port.c:471:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:472:13: note: here
+src/driver/comm_port.c:472:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:473:13: note: here
+src/driver/comm_port.c:473:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:474:13: note: here
+src/driver/comm_port.c:474:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:475:13: note: here
+src/driver/comm_port.c:475:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:476:13: note: here
+src/driver/comm_port.c:476:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:477:13: note: here
+src/driver/comm_port.c:477:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:478:13: note: here
+src/driver/comm_port.c:478:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:479:13: note: here
+src/driver/comm_port.c:479:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:480:13: note: here
+src/driver/comm_port.c:480:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:481:13: note: here
+src/driver/comm_port.c:481:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:482:13: note: here
+src/driver/comm_port.c:482:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:483:13: note: here
+src/driver/comm_port.c:483:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:484:13: note: here
+src/driver/comm_port.c:484:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:485:13: note: here
+src/driver/comm_port.c:485:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:486:13: note: here
+src/driver/comm_port.c:486:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:487:13: note: here
+src/driver/comm_port.c:487:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:488:13: note: here
+src/driver/comm_port.c:488:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:491:13: note: here
+src/driver/comm_port.c:491:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:492:13: note: here
+src/driver/comm_port.c:492:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:493:13: note: here
+src/driver/comm_port.c:493:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:494:13: note: here
+src/driver/comm_port.c:494:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:495:13: note: here
+src/driver/comm_port.c:495:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:496:13: note: here
+src/driver/comm_port.c:496:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:497:13: note: here
+src/driver/comm_port.c:497:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:498:13: note: here
+src/driver/comm_port.c:498:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:499:13: note: here
+src/driver/comm_port.c:499:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:500:13: note: here
+src/driver/comm_port.c:500:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:501:13: note: here
+src/driver/comm_port.c:501:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:502:13: note: here
+src/driver/comm_port.c:502:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:503:13: note: here
+src/driver/comm_port.c:503:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:504:13: note: here
+src/driver/comm_port.c:504:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:505:13: note: here
+src/driver/comm_port.c:505:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:506:13: note: here
+src/driver/comm_port.c:506:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:509:13: note: here
+src/driver/comm_port.c:509:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:510:13: note: here
+src/driver/comm_port.c:510:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:511:13: note: here
+src/driver/comm_port.c:511:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:512:13: note: here
+src/driver/comm_port.c:512:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:513:13: note: here
+src/driver/comm_port.c:513:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:514:13: note: here
+src/driver/comm_port.c:514:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:515:13: note: here
+src/driver/comm_port.c:515:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:516:13: note: here
+src/driver/comm_port.c:516:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:518:13: note: here
+src/driver/comm_port.c:518:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:519:13: note: here
+src/driver/comm_port.c:519:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:520:13: note: here
+src/driver/comm_port.c:520:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:521:13: note: here
+src/driver/comm_port.c:521:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:522:13: note: here
+src/driver/comm_port.c:522:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:523:13: note: here
+src/driver/comm_port.c:523:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:524:13: note: here
+src/driver/comm_port.c:524:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+src/driver/comm_port.c:525:13: note: here
+• Compiling src/userspace/commands_binary.c
+• Compiling src/userspace/pdb_control.c
+• Compiling src/userspace/protocol.c
+• Compiling src/userspace/device/ads7138.c
+• Compiling src/userspace/device/ads7828.c
+• Compiling src/userspace/device/bb2590u.c
+• Compiling src/userspace/device/bme280.c
+• Compiling src/userspace/device/bno055.c
+• Compiling src/userspace/device/clockgen.c
+• Compiling src/userspace/device/i2c_utils.c
+• Compiling src/userspace/device/lp5569.c
+• Compiling src/userspace/device/mcp23017.c
+• Compiling src/userspace/device/rfamp_10w.c
+• Compiling src/userspace/device/tca9544a.c
+• Linking project...
+/opt/homebrew/opt/avr-binutils/bin/avr-ld: build/obj/core/modules/control_module.o: in function `control_module_update':
+/Users/developer/projects/embedded/firmware/src/core/modules/control_module.c:211:(.text.control_module_update+0x4): undefined reference to `engine_update'
+collect2: error: ld returned 1 exit status

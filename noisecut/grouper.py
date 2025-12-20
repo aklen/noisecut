@@ -39,7 +39,8 @@ def group_issues(issues: List[BuildIssue]) -> List[GroupedIssue]:
                 locations=[]
             )
         
-        # Add location only if not already present (avoid duplicates from multiple TUs)
+        # Add location only if not already present (deduplicate same physical location)
+        # This handles headers included in multiple translation units
         location = (issue.file, issue.line, issue.column)
         if location not in groups[key_issue].locations:
             groups[key_issue].locations.append(location)
