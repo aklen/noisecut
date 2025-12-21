@@ -3,15 +3,47 @@ Issue grouping logic
 """
 
 from typing import List, Dict
+import re
 from .model import BuildIssue, GroupedIssue
+
+
+def normalize_message(message: str, category: str) -> str:
+    """
+    Normalize warning/error message for grouping.
+    
+    For warnings with specific variable/function names, strip them out
+    so similar warnings group together (e.g., "unused parameter 'x'" 
+    and "unused parameter 'y'" become "unused parameter").
+    
+    Args:
+        message: Original warning/error message
+        category: Warning category (e.g., -Wunused-parameter)
+        
+    Returns:
+        Normalized message for grouping
+    """
+    # Remove quoted strings (variable names, function names, etc.)
+    # e.g., "unused parameter 'flags'" -> "unused parameter"
+    normalized = re.sub(r"'[^']*'", "", message)
+    normalized = re.sub(r'"[^"]*"', "", normalized)
+    normalized = re.sub(r"'[^']*'", "", normalized)  # Unicode quotes
+    
+    # Clean up extra whitespace
+    normalized = re.sub(r'\s+', ' ', normalized).strip()
+    
+    # Remove trailing punctuation and "did you mean X?" suggestions
+    normalized = re.sub(r';\s*did you mean.*$', '', normalized)
+    normalized = re.sub(r'\?.*$', '', normalized)
+    
+    return normalized
 
 
 def group_issues(issues: List[BuildIssue]) -> List[GroupedIssue]:
     """
-    Group identical issues together.
+    Group similar issues together.
     
-    Issues are considered identical if they have the same type, message, and category,
-    regardless of file location.
+    Issues are grouped by type, normalized message, and category.
+    This allows grouping "unused parameter 'x'" and "unused parameter 'y'" together.
     
     Args:
         issues: List of BuildIssue objects
@@ -19,31 +51,38 @@ def group_issues(issues: List[BuildIssue]) -> List[GroupedIssue]:
     Returns:
         List of GroupedIssue objects, sorted by occurrence count (descending)
     """
-    groups: Dict[BuildIssue, GroupedIssue] = {}
+    groups: Dict[tuple, GroupedIssue] = {}
     
     for issue in issues:
-        # Create a key based on type, message, and category
-        key_issue = BuildIssue(
-            type=issue.type,
-            file="",
-            line=0,
-            column=0,
-            message=issue.message,
-            category=issue.category,
-            detail=issue.detail
-        )
+        # Normalize message for grouping
+        normalized_msg = normalize_message(issue.message, issue.category)
         
-        if key_issue not in groups:
-            groups[key_issue] = GroupedIssue(
+        # Create a grouping key
+        key = (issue.type, normalized_msg, issue.category)
+        
+        if key not in groups:
+            # Create new group with normalized message
+            key_issue = BuildIssue(
+                type=issue.type,
+                file="",
+                line=0,
+                column=0,
+                message=normalized_msg,
+                category=issue.category,
+                detail=issue.detail
+            )
+            groups[key] = GroupedIssue(
                 issue=key_issue,
                 locations=[]
             )
         
-        # Add location only if not already present (deduplicate same physical location)
-        # This handles headers included in multiple translation units
-        location = (issue.file, issue.line, issue.column)
-        if location not in groups[key_issue].locations:
-            groups[key_issue].locations.append(location)
+        # Add location with original message (for showing variable names)
+        location = (issue.file, issue.line, issue.column, issue.message)
+        # Deduplicate exact same physical location
+        location_without_msg = (issue.file, issue.line, issue.column)
+        existing_locations = [(f, l, c) for f, l, c, _ in groups[key].locations]
+        if location_without_msg not in existing_locations:
+            groups[key].locations.append(location)
     
     # Sort by count (most common first)
     return sorted(groups.values(), key=lambda g: g.count, reverse=True)

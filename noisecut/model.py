@@ -32,7 +32,7 @@ class BuildIssue:
 class GroupedIssue:
     """Groups multiple occurrences of the same issue"""
     issue: BuildIssue
-    locations: List[Tuple[str, int, int]] = field(default_factory=list)
+    locations: List[Tuple[str, int, int, str]] = field(default_factory=list)  # file, line, col, original_message
     
     @property
     def count(self) -> int:
