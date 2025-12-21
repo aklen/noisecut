@@ -28,6 +28,14 @@ def normalize_message(message: str, category: str) -> str:
     normalized = re.sub(r'"[^"]*"', "", normalized)
     normalized = re.sub(r"'[^']*'", "", normalized)  # Unicode quotes
     
+    # For sign-compare warnings, strip type names to group similar warnings
+    # e.g., "comparison of integers of different signs: 'int' and 'unsigned long'" 
+    # -> "comparison of integers of different signs: and"
+    if "comparison" in normalized.lower() or category == "-Wsign-compare":
+        # Remove everything after "signs:" to strip all type information
+        # Handles both "signs: int and unsigned long" and "signs: int and size_type (aka unsigned long)"
+        normalized = re.sub(r"signs:.*$", "signs: and", normalized)
+    
     # Clean up extra whitespace
     normalized = re.sub(r'\s+', ' ', normalized).strip()
     
