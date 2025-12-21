@@ -189,8 +189,10 @@ class TestIssueGrouping:
         
         assert len(grouped) == 1
         assert len(grouped[0].locations) == 2
-        assert ("a.cpp", 10, 5) in grouped[0].locations
-        assert ("b.cpp", 20, 10) in grouped[0].locations
+        # Check that locations contain the expected file/line/col (ignoring message)
+        location_tuples = [(f, l, c) for f, l, c, _ in grouped[0].locations]
+        assert ("a.cpp", 10, 5) in location_tuples
+        assert ("b.cpp", 20, 10) in location_tuples
 
 
 class TestFileInput:

@@ -43,7 +43,9 @@ class TestDeduplication:
         # The warning appears in 4 different compilation units,
         # but should only show the location once (utils.h:23:10)
         assert override_warning.count == 1, f"Expected 1 unique location, got {override_warning.count}"
-        assert override_warning.locations[0] == ("../include/utils.h", 23, 10)
+        # Check location (file, line, col) - ignore message (4th element)
+        file_path, line, col, _ = override_warning.locations[0]
+        assert (file_path, line, col) == ("../include/utils.h", 23, 10)
     
     def test_different_locations_not_deduplicated(self):
         """Test that warnings at different locations are kept separate"""
@@ -200,11 +202,11 @@ class TestLargeFirmwareBuild:
         assert fallthrough_warning.count >= 50, f"Expected 50+ fallthrough warnings, got {fallthrough_warning.count}"
         
         # All locations should be in comm_port.c but at different lines
-        for file_path, line, col in fallthrough_warning.locations:
+        for file_path, line, col, _ in fallthrough_warning.locations:
             assert "comm_port.c" in file_path
         
         # Verify lines are unique (no duplicates)
-        lines = [line for _, line, _ in fallthrough_warning.locations]
+        lines = [line for _, line, _, _ in fallthrough_warning.locations]
         assert len(lines) == len(set(lines)), "Found duplicate line numbers (deduplication bug)"
     
     def test_large_firmware_build_implicit_declaration_warnings(self):

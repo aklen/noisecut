@@ -119,14 +119,30 @@ def print_issue_summary(grouped_issues: List[GroupedIssue], max_locations: int =
         # Locations
         print(f"  {Color.BOLD}Occurrences ({group.count}):{Color.NC}")
         
-        for i, (file_path, line, col) in enumerate(group.locations[:max_locations]):
+        for i, location_data in enumerate(group.locations[:max_locations]):
+            # Handle both old (3-tuple) and new (4-tuple) format
+            if len(location_data) == 4:
+                file_path, line, col, original_msg = location_data
+            else:
+                file_path, line, col = location_data
+                original_msg = None
+            
             location = format_issue_location(file_path, line, col)
             
             # Wrap long paths
             if len(location) > terminal_width - 6:
                 location = "..." + location[-(terminal_width - 9):]
             
-            print(f"    {Color.CYAN}{location}{Color.NC}")
+            # Extract variable/function name from original message if different from grouped message
+            detail_suffix = ""
+            if original_msg and original_msg != group.issue.message:
+                # Extract quoted parts (variable names, etc.)
+                import re
+                quoted = re.findall(r"'([^']*)'", original_msg)
+                if quoted:
+                    detail_suffix = f" {Color.DIM}({', '.join(quoted)}){Color.NC}"
+            
+            print(f"    {Color.CYAN}{location}{Color.NC}{detail_suffix}")
         
         if group.count > max_locations:
             remaining = group.count - max_locations
