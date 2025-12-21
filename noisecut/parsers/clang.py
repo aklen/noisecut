@@ -24,7 +24,7 @@ class ClangParser(BaseParser):
     
     # Issue patterns (same as GCC)
     ISSUE_PATTERN = re.compile(
-        r'^(.*?):(\d+):(\d+):\s+(warning|error):\s+(.+?)(?:\s+\[([-\w]+)\])?$'
+        r'^(.*?):(\d+):(\d+):\s+(warning|error):\s+(.+?)(?:\s+\[([-\w+=]+)\])?$'
     )
     
     NOTE_PATTERN = re.compile(
