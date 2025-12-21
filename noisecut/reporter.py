@@ -88,28 +88,27 @@ def print_issue_summary(grouped_issues: List[GroupedIssue], max_locations: int =
         severity = None
         if issue.type == 'warning' and issue.category and show_severity:
             severity = get_severity(issue.category)
-            severity_color = get_severity_color(severity)
         
-        # Color based on type (or severity for warnings)
+        # Color and formatting
         if issue.type == 'error':
             color = Color.RED
             icon = "✗"
             header_suffix = ""
         else:
-            if severity:
-                color = severity_color
-                # Show severity for non-MEDIUM warnings
-                if severity in [Severity.CRITICAL, Severity.HIGH, Severity.LOW, Severity.INFO]:
-                    header_suffix = f" [{severity}]"
-                else:
-                    header_suffix = ""
-            else:
-                color = Color.YELLOW
-                header_suffix = ""
+            # Warnings are always YELLOW
+            color = Color.YELLOW
             icon = "⚠"
+            
+            # But HIGH/CRITICAL badges are RED
+            if severity and severity in [Severity.CRITICAL, Severity.HIGH]:
+                header_suffix = f"{Color.NC} [{Color.RED}{Color.BOLD}{severity}{Color.NC}]"
+            elif severity in [Severity.LOW, Severity.INFO]:
+                header_suffix = f"{Color.NC} [{Color.CYAN}{severity}{Color.NC}]"
+            else:
+                header_suffix = ""
         
-        # Header
-        print(f"\n{color}{Color.BOLD}{icon} {issue.type.upper()}{header_suffix}{Color.NC}: {issue.message}")
+        # Header: WARNING always yellow, but severity badge can be red
+        print(f"\n{color}{Color.BOLD}{icon} {issue.type.upper()}{Color.NC}{header_suffix}: {issue.message}")
         
         if issue.category:
             print(f"  {Color.DIM}Category: {issue.category}{Color.NC}")
