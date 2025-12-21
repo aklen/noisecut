@@ -11,8 +11,10 @@ A modular build output analyzer for C/C++ projects that transforms raw compiler 
 `noisecut` is a Python-based build analysis tool that parses GCC/Clang/AVR-GCC compiler output and provides:
 
 - **Automatic compiler detection** - recognizes GCC, Clang, AVR-GCC automatically
-- **Colorized output** with ANSI codes for better readability
-- **Error/warning grouping** - groups identical issues across files
+- **Smart warning grouping** - groups warnings by category (e.g., all "unused parameter" warnings together)
+- **Severity classification** - 5-level severity system (INFO, LOW, MEDIUM, HIGH, CRITICAL) with 50+ warning types classified
+- **Severity-based sorting** - most critical issues appear at the bottom for immediate visibility
+- **Colorized output** - severity badges color-coded (cyan for INFO/LOW, white for MEDIUM, red for HIGH/CRITICAL)
 - **Build statistics** - tracks files compiled, warnings, errors, and duration
 - **Modular architecture** - easily extensible with new parsers
 - **Clean summary** - hides verbose compiler flags, shows only essentials
@@ -23,37 +25,69 @@ noisecut is not a linter or static analyzer — it works purely on compiler outp
 
 ### Automatic Compiler Detection
 
-Automatically detects the compiler being used and applies the appropriate parser:
+Smart multi-stage auto-detection with fallback mechanisms:
+1. **Direct detection** from compilation commands (gcc, clang, avr-gcc)
+2. **Project file inspection** (Makefile, CMakeLists.txt, PKGBUILD)
+3. **Warning format analysis** (GCC vs Clang patterns)
+4. **Buffering and replay** - stores first 100 lines, replays when compiler detected
+
+Supports:
 - GCC/G++
 - Clang/Clang++
 - AVR-GCC (for embedded systems)
 
-No need to manually specify the compiler type!
+No manual parser selection needed - just run and it figures it out!
 
 ### Intelligent Output Parsing
 
-Parses compiler output and identifies:
-- Compilation actions (`[CC]`)
+Parses diverse compiler output formats:
+- Standard compilation commands (`gcc -c ... -o file.o`)
+- Make-style bullet points (`• Compiling src/file.c`)
 - MOC generation (`[MOC]`) for Qt projects
 - Warnings and errors with file locations
+- Linker errors (undefined references)
 - Additional context (notes, overridden functions, etc.)
+- Warning categories with optional values (e.g., `-Wimplicit-fallthrough=`)
 
-### Issue Grouping
+### Smart Warning Grouping
 
-Groups identical warnings/errors together, showing:
-- The warning/error message
-- Category (e.g., `-Wunused-parameter`, `-Winconsistent-missing-override`)
-- All file locations where it occurs
-- Count of occurrences
+Groups warnings by category, not individual messages:
+- `unused parameter 'flags'` and `unused parameter 'argc'` → grouped as **"unused parameter"** (2 occurrences)
+- Variable/function names shown in parentheses per location
+- Category badge (e.g., `-Wunused-parameter`, `-Wimplicit-fallthrough=`)
+- All file locations listed together
+- Count of total occurrences
+
+### Severity Classification
+
+5-level severity system with 50+ warning types classified:
+
+- **CRITICAL** - Memory corruption, undefined behavior (dangling pointers, return-type, infinite recursion)
+- **HIGH** - Likely bugs (sign-compare, overflow, implicit-fallthrough, uninitialized variables)
+- **MEDIUM** - Code quality (unused variables, unused parameters, shadowing)
+- **LOW** - Style/cosmetic (missing override, extra semicolons)
+- **INFO** - Informational (#warning directives, pragmas)
+
+Warnings are **sorted by severity** - most critical issues appear at the **bottom** of the output, so you see them immediately without scrolling!
+
+**Example output:**
+```
+⚠ WARNING [INFO]: #warning "Debug mode enabled"
+⚠ WARNING [MEDIUM]: unused parameter (5 occurrences)
+⚠ WARNING [HIGH]: implicit-fallthrough (63 occurrences)
+⚠ WARNING [CRITICAL]: control reaches end of non-void function
+✗ ERROR: undefined reference to 'main'
+```
 
 ### Color Coding
 
-- **Cyan**: Compilation and build info
+- **Cyan**: Compilation info, `[INFO]` and `[LOW]` severity badges
 - **Magenta**: MOC (Meta-Object Compiler) generation
-- **Yellow**: Warnings
-- **Red**: Errors
+- **Yellow**: All warnings (consistent color)
+- **White**: `[MEDIUM]` severity badge
+- **Red**: Errors, `[HIGH]` and `[CRITICAL]` severity badges (bold for CRITICAL)
 - **Green**: Success status
-- **Bold**: Important messages
+- **Bold**: Important messages and critical severities
 
 Colors are disabled automatically when:
 - Output is redirected to a file
@@ -168,6 +202,14 @@ Show all compiler output instead of just the summary:
 ./ncut.py --max-locations 10
 ```
 
+### Disable Severity Classification
+
+If you prefer the classic output without severity badges:
+
+```bash
+./ncut.py --no-severity
+```
+
 ### Manual Parser Selection
 
 By default, noisecut auto-detects the compiler. You can override this:
@@ -182,7 +224,7 @@ By default, noisecut auto-detects the compiler. You can override this:
 
 ```
 usage: ncut [-h] [-v] [-f FILE] [-j JOBS] [--clean] [--max-locations MAX_LOCATIONS] 
-            [--parser {auto,gcc,clang,avr-gcc}] [target]
+            [--no-severity] [--parser {auto,gcc,clang,avr-gcc}] [target]
 
 Build output analyzer for C/C++ projects
 
@@ -197,6 +239,7 @@ optional arguments:
   --clean               Clean before building
   --max-locations MAX_LOCATIONS
                         Maximum locations to show per issue (default: 5)
+  --no-severity         Disable severity classification badges
   --parser {auto,gcc,clang,avr-gcc}
                         Parser to use (default: auto-detect)
 ```
@@ -236,13 +279,17 @@ To add support for a new compiler:
 | Feature | `make -j8` | `ncut` |
 |---------|-----------|--------|
 | See compilation progress | Verbose flags | Clean summary |
-| Group similar warnings | No | Yes |
-| Colorized output | No | Yes |
+| Group similar warnings | No | **Yes - by category** |
+| Severity classification | No | **Yes - 5 levels** |
+| Smart sorting | No | **Yes - critical at bottom** |
+| Colorized output | No | **Yes - severity badges** |
 | Build statistics | No | Yes |
-| Error summary | Scattered | Grouped at end |
-| Show all locations | Need to scroll | Listed together |
-| Compiler detection | Manual | Automatic |
+| Error summary | Scattered | **Grouped at end** |
+| Show all locations | Need to scroll | **Listed together** |
+| Compiler detection | Manual | **Automatic multi-stage** |
 | Multiple compilers | Single project | Mixed projects supported |
+| Make-style output | N/A | **Parsed natively** |
+| Linker errors | Mixed with output | **Grouped with errors** |
 
 ## Integration with Existing Build Scripts
 
@@ -288,7 +335,6 @@ The build wrapper recognizes these compiler output patterns:
    ../src/file.cpp:123:45: warning: unused parameter 'foo' [-Wunused-parameter]
    ../src/file.cpp:456:78: error: no matching function
    ```
-
 4. **Additional Context**:
    ```
    ../src/file.h:23:18: note: overridden virtual function is here
@@ -298,22 +344,36 @@ The build wrapper recognizes these compiler output patterns:
 
 Issues are grouped by:
 - Type (warning or error)
-- Message text
+- Normalized message (variable names stripped)
 - Warning category (e.g., `-Wunused-parameter`)
 
 This allows the tool to show:
-- "This unused parameter warning appears in 15 different places"
+- "unused parameter" appears in 15 different places (with variable names in parentheses)
 - Complete list of all affected files
-
-## Requirements
-
-- Python 3.7+
-- No additional packages required (uses only stdlib)
-- Works with GCC, Clang, AVR-GCC, and other compatible compilers
 
 ## Testing
 
+The project includes a comprehensive test suite with **30 unit tests** covering:
+- GCC, Clang, AVR-GCC parser functionality
+- Severity classification (5 levels, 50+ warning types)
+- Smart warning grouping by category
+- Deduplication of header warnings
+- Large firmware build scenarios (72 warnings, multiple files)
+- Make-style output parsing
+- Linker error detection
+
+See [tests/README.md](tests/README.md) for details.
 The project includes a comprehensive test suite with 16 unit tests. See [tests/README.md](tests/README.md) for details.
+
+### Run Tests
+
+```bash
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install test dependencies
+pip install -r requirements-dev.txtSee [tests/README.md](tests/README.md) for details.
 
 ### Run Tests
 
@@ -330,6 +390,12 @@ pytest tests/ -v
 ```
 
 All tests pass with the modular architecture.
+
+## Requirements
+
+- Python 3.7+
+- No additional packages required (uses only stdlib)
+- Works with GCC, Clang, AVR-GCC, and other compatible compilers
 
 ## Pro Tips
 
