@@ -15,6 +15,8 @@ from .grouper import group_issues
 from .reporter import print_issue_summary, print_build_stats
 from .utils import Color
 
+__version__ = "0.4.0"
+
 
 def parse_from_file(file_path: str, verbose: bool = False, 
                     parser=None) -> Tuple[int, BuildStats, List[BuildIssue]]:
@@ -126,8 +128,13 @@ def run_build(command: List[str], verbose: bool = False,
 def main():
     """Main entry point for the CLI"""
     parser = argparse.ArgumentParser(
-        description='Build output analyzer for C/C++ projects',
+        description=f'Build output analyzer for C/C++ projects (v{__version__})',
         prog='ncut'
+    )
+    parser.add_argument(
+        '--version',
+        action='version',
+        version=f'%(prog)s {__version__}'
     )
     parser.add_argument(
         '-v', '--verbose',
