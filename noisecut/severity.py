@@ -80,13 +80,26 @@ def get_severity(category: str) -> str:
     """
     Get severity level for a warning category.
     
+    Handles categories with optional values like "-Wimplicit-fallthrough=".
+    
     Args:
-        category: Warning category (e.g., "-Wunused-parameter")
+        category: Warning category (e.g., "-Wunused-parameter" or "-Wimplicit-fallthrough=")
         
     Returns:
         Severity level string
     """
-    return SEVERITY_MAP.get(category, Severity.MEDIUM)
+    # Try exact match first
+    if category in SEVERITY_MAP:
+        return SEVERITY_MAP[category]
+    
+    # Try without trailing = or =N
+    # e.g., "-Wimplicit-fallthrough=" -> "-Wimplicit-fallthrough"
+    if '=' in category:
+        base_category = category.split('=')[0]
+        if base_category in SEVERITY_MAP:
+            return SEVERITY_MAP[base_category]
+    
+    return Severity.MEDIUM
 
 
 def get_severity_color(severity: str) -> str:
