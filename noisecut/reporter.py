@@ -99,9 +99,11 @@ def print_issue_summary(grouped_issues: List[GroupedIssue], max_locations: int =
             color = Color.YELLOW
             icon = "⚠"
             
-            # But HIGH/CRITICAL badges are RED
+            # But HIGH/CRITICAL badges are RED, MEDIUM is white, LOW/INFO is cyan
             if severity and severity in [Severity.CRITICAL, Severity.HIGH]:
                 header_suffix = f"{Color.NC} [{Color.RED}{Color.BOLD}{severity}{Color.NC}]"
+            elif severity == Severity.MEDIUM:
+                header_suffix = f"{Color.NC} [{severity}]"  # White (default terminal color)
             elif severity in [Severity.LOW, Severity.INFO]:
                 header_suffix = f"{Color.NC} [{Color.CYAN}{severity}{Color.NC}]"
             else:
