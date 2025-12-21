@@ -7,6 +7,33 @@ import re
 from .model import BuildIssue, GroupedIssue
 
 
+def normalize_path_for_dedup(file_path: str) -> str:
+    """
+    Normalize file path for deduplication using last 3 path components.
+    
+    This handles different relative paths while distinguishing files 
+    with same names in different directories.
+    
+    Examples:
+        ../../src/window/EMainTab/emaintab.h -> window/EMainTab/emaintab.h
+        ../drivers/gps/sensor.cpp -> drivers/gps/sensor.cpp
+        src/utils/logger.cpp -> utils/logger.cpp (distinct from drivers/logger.cpp)
+    
+    Args:
+        file_path: Original file path (may be relative with .. or ./)
+        
+    Returns:
+        Normalized path using last 3 components
+    """
+    parts = file_path.replace('\\', '/').split('/')
+    # Filter out .., ., moc, build, obj directories
+    clean_parts = [p for p in parts if p and p not in ('..', '.', 'moc', 'build', 'obj', 'out')]
+    
+    # Take last 3 components (dir/subdir/file.h)
+    # Falls back to full path if less than 3 components
+    return '/'.join(clean_parts[-3:]) if len(clean_parts) >= 3 else '/'.join(clean_parts)
+
+
 def normalize_message(message: str, category: str) -> str:
     """
     Normalize warning/error message for grouping.
@@ -86,10 +113,12 @@ def group_issues(issues: List[BuildIssue]) -> List[GroupedIssue]:
         
         # Add location with original message (for showing variable names)
         location = (issue.file, issue.line, issue.column, issue.message)
-        # Deduplicate exact same physical location
-        location_without_msg = (issue.file, issue.line, issue.column)
-        existing_locations = [(f, l, c) for f, l, c, _ in groups[key].locations]
-        if location_without_msg not in existing_locations:
+        # Deduplicate based on normalized path + line + column
+        # This handles different relative paths to the same file
+        normalized_path = normalize_path_for_dedup(issue.file)
+        location_key = (normalized_path, issue.line, issue.column)
+        existing_locations = [(normalize_path_for_dedup(f), l, c) for f, l, c, _ in groups[key].locations]
+        if location_key not in existing_locations:
             groups[key].locations.append(location)
     
     # Sort by count (most common first)
