@@ -57,10 +57,15 @@ SEVERITY_MAP = {
     "-Wunused-variable": Severity.MEDIUM,
     "-Wunused-parameter": Severity.MEDIUM,
     "-Wunused-function": Severity.MEDIUM,
+    "-Wunused-but-set-variable": Severity.MEDIUM,
+    "-Wunused-result": Severity.MEDIUM,
     "-Wshadow": Severity.MEDIUM,
     "-Wconversion": Severity.MEDIUM,
     "-Wdeprecated": Severity.MEDIUM,
     "-Wdeprecated-declarations": Severity.MEDIUM,
+    "-Wreorder-ctor": Severity.MEDIUM,
+    "-Wreorder": Severity.MEDIUM,
+    "-Wmacro-redefined": Severity.MEDIUM,
     
     # Low - Style/cosmetic
     "-Winconsistent-missing-override": Severity.LOW,
@@ -68,6 +73,9 @@ SEVERITY_MAP = {
     "-Wextra-semi": Severity.LOW,
     "-Wcomma": Severity.LOW,
     "-Wpedantic": Severity.LOW,
+    "-Wc++20-extensions": Severity.LOW,
+    "-Wc++17-extensions": Severity.LOW,
+    "-Wc++14-extensions": Severity.LOW,
     
     # Info
     "-Wcpp": Severity.INFO,
