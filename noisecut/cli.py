@@ -15,7 +15,7 @@ from .grouper import group_issues
 from .reporter import print_issue_summary, print_build_stats
 from .utils import Color
 
-__version__ = "0.4.0"
+__version__ = "0.4.1"
 
 
 def parse_from_file(file_path: str, verbose: bool = False, 
