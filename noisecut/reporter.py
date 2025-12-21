@@ -43,6 +43,8 @@ def print_issue_summary(grouped_issues: List[GroupedIssue], max_locations: int =
                         show_severity: bool = True):
     """
     Print grouped issues with colors and formatting.
+    Issues are sorted by severity (least important first, most important last)
+    so that critical issues appear at the bottom of the terminal output.
     
     Args:
         grouped_issues: List of grouped issues to display
@@ -54,7 +56,32 @@ def print_issue_summary(grouped_issues: List[GroupedIssue], max_locations: int =
     
     terminal_width = get_terminal_width()
     
-    for group in grouped_issues:
+    # Sort by severity: LOW/INFO first, CRITICAL/HIGH last
+    # This puts the most important issues at the bottom of the output
+    severity_order = {
+        Severity.INFO: 0,
+        Severity.LOW: 1,
+        Severity.MEDIUM: 2,
+        Severity.HIGH: 3,
+        Severity.CRITICAL: 4,
+        None: 5  # Unknown severity (shouldn't happen, but just in case)
+    }
+    
+    def get_sort_key(group: GroupedIssue):
+        issue = group.issue
+        # Errors always last (most important)
+        if issue.type == 'error':
+            return (99, 0, -group.count)  # Errors at the very end
+        # Warnings sorted by severity
+        severity = get_severity(issue.category) if issue.category else None
+        return (
+            severity_order.get(severity, 5),  # Severity level
+            -group.count  # More occurrences first within same severity
+        )
+    
+    sorted_issues = sorted(grouped_issues, key=get_sort_key)
+    
+    for group in sorted_issues:
         issue = group.issue
         
         # Determine severity for warnings
