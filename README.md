@@ -62,13 +62,53 @@ Colors are disabled automatically when:
 
 ## Installation
 
+### Recommended: pipx (Isolated Install)
+
+The easiest way to install `noisecut` globally is with [pipx](https://pipx.pypa.io/):
+
+```bash
+pipx install git+https://github.com/aklen/noisecut.git
+```
+
+This installs `noisecut` in an isolated environment and adds the `ncut` command to your PATH.
+
+**Upgrade:**
+```bash
+pipx upgrade noisecut
+```
+
+**Uninstall:**
+```bash
+pipx uninstall noisecut
+```
+
+### Alternative: pip
+
+You can also install with pip (user install):
+
+```bash
+pip install --user git+https://github.com/aklen/noisecut.git
+```
+
+### Development Install
+
+For development, clone the repository and install in editable mode:
+
+```bash
+git clone https://github.com/aklen/noisecut.git
+cd noisecut
+pip install -e .
+```
+
+### No Install (Direct Usage)
+
 No installation required. Simply ensure you have Python 3.7+ installed:
 
 ```bash
 python3 --version
 ```
 
-The package uses only standard library modules.
+The package uses only standard library modules. Run directly with `./ncut.py` or `python -m noisecut`.
 
 ## Usage
 
