@@ -1,5 +1,9 @@
 """
 Warning severity classification
+
+Reference for comprehensive warning lists:
+- Clang warnings: https://github.com/Barro/compiler-warnings/blob/master/clang/warnings-clang-top-level-8.txt
+- GCC warnings: https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
 """
 
 from typing import Optional
@@ -23,33 +27,52 @@ SEVERITY_MAP = {
     "-Wreturn-type": Severity.CRITICAL,
     "-Warray-bounds": Severity.CRITICAL,
     "-Wdangling-pointer": Severity.CRITICAL,
+    "-Wdangling": Severity.CRITICAL,
+    "-Wdangling-field": Severity.CRITICAL,
+    "-Wdangling-initializer-list": Severity.CRITICAL,
+    "-Wreturn-stack-address": Severity.CRITICAL,
     "-Wuse-after-free": Severity.CRITICAL,
+    "-Winfinite-recursion": Severity.CRITICAL,
+    "-Wnull-dereference": Severity.CRITICAL,
     
     # High - Likely bugs
     "-Wsometimes-uninitialized": Severity.HIGH,
     "-Wmaybe-uninitialized": Severity.HIGH,
+    "-Wconditional-uninitialized": Severity.HIGH,
     "-Wsign-compare": Severity.HIGH,
     "-Wformat": Severity.HIGH,
-    "-Wnull-dereference": Severity.HIGH,
+    "-Wformat-security": Severity.HIGH,
     "-Wdivision-by-zero": Severity.HIGH,
     "-Wshift-overflow": Severity.HIGH,
+    "-Woverflow": Severity.HIGH,
+    "-Wunsequenced": Severity.HIGH,
+    "-Wfor-loop-analysis": Severity.HIGH,
+    "-Wself-assign": Severity.HIGH,
+    "-Wself-assign-field": Severity.HIGH,
+    "-Wself-move": Severity.HIGH,
+    "-Wimplicit-fallthrough": Severity.HIGH,
+    "-Wimplicit-function-declaration": Severity.HIGH,
     
     # Medium - Code quality
     "-Wunused-variable": Severity.MEDIUM,
     "-Wunused-parameter": Severity.MEDIUM,
+    "-Wunused-function": Severity.MEDIUM,
     "-Wshadow": Severity.MEDIUM,
     "-Wconversion": Severity.MEDIUM,
     "-Wdeprecated": Severity.MEDIUM,
+    "-Wdeprecated-declarations": Severity.MEDIUM,
     
     # Low - Style/cosmetic
     "-Winconsistent-missing-override": Severity.LOW,
     "-Wmissing-braces": Severity.LOW,
     "-Wextra-semi": Severity.LOW,
     "-Wcomma": Severity.LOW,
+    "-Wpedantic": Severity.LOW,
     
     # Info
     "-Wcpp": Severity.INFO,
     "-Wpragmas": Severity.INFO,
+    "-W#warnings": Severity.INFO,
 }
 
 
