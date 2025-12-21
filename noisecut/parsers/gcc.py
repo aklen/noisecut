@@ -30,7 +30,7 @@ class GccParser(BaseParser):
     
     # Issue patterns
     ISSUE_PATTERN = re.compile(
-        r'^(.*?):(\d+):(\d+):\s+(warning|error):\s+(.+?)(?:\s+\[([-\w]+)\])?$'
+        r'^(.*?):(\d+):(\d+):\s+(warning|error):\s+(.+?)(?:\s+\[([-\w=]+)\])?$'
     )
     
     # Linker error pattern (e.g., /path/file.c:211:(...): undefined reference to `symbol`)
