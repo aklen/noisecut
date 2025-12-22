@@ -70,9 +70,12 @@ def print_issue_summary(grouped_issues: List[GroupedIssue], max_locations: int =
     def get_sort_key(group: GroupedIssue):
         issue = group.issue
         # Errors always last (most important)
-        if issue.type == 'error':
+        if issue.type == 'error' or issue.type == 'linker-error':
             return (99, 0, -group.count)  # Errors at the very end
-        # Warnings sorted by severity
+        # Linker warnings: medium priority (after regular warnings)
+        if issue.type == 'linker-warning':
+            return (50, -group.count)
+        # Regular warnings sorted by severity
         severity = get_severity(issue.category) if issue.category else None
         return (
             severity_order.get(severity, 5),  # Severity level
@@ -84,20 +87,25 @@ def print_issue_summary(grouped_issues: List[GroupedIssue], max_locations: int =
     for group in sorted_issues:
         issue = group.issue
         
+        # Check if this is a linker issue
+        is_linker = issue.type.startswith('linker-')
+        
         # Determine severity for warnings
         severity = None
         if issue.type == 'warning' and issue.category and show_severity:
             severity = get_severity(issue.category)
         
         # Color and formatting
-        if issue.type == 'error':
+        if issue.type == 'error' or issue.type == 'linker-error':
             color = Color.RED
             icon = "✗"
             header_suffix = ""
+            type_label = "LINKER ERROR" if is_linker else "ERROR"
         else:
             # Warnings are always YELLOW
             color = Color.YELLOW
             icon = "⚠"
+            type_label = "LINKER WARNING" if is_linker else "WARNING"
             
             # But HIGH/CRITICAL badges are RED, MEDIUM is white, LOW/INFO is cyan
             if severity and severity in [Severity.CRITICAL, Severity.HIGH]:
@@ -124,7 +132,7 @@ def print_issue_summary(grouped_issues: List[GroupedIssue], max_locations: int =
                 display_message = f"found deprecated declaration: {suggestion}"
         
         # Header: WARNING always yellow, but severity badge can be red
-        print(f"\n{color}{Color.BOLD}{icon} {issue.type.upper()}{Color.NC}{header_suffix}: {display_message}")
+        print(f"\n{color}{Color.BOLD}{icon} {type_label}{Color.NC}{header_suffix}: {display_message}")
         
         if issue.category:
             print(f"  {Color.DIM}Category: {issue.category}{Color.NC}")
@@ -132,37 +140,67 @@ def print_issue_summary(grouped_issues: List[GroupedIssue], max_locations: int =
         if issue.detail:
             print(f"  {Color.DIM}{issue.detail}{Color.NC}")
         
-        # Locations
-        print(f"  {Color.BOLD}Occurrences ({group.count}):{Color.NC}")
-        
-        for i, location_data in enumerate(group.locations[:max_locations]):
-            # Handle both old (3-tuple) and new (4-tuple) format
-            if len(location_data) == 4:
-                file_path, line, col, original_msg = location_data
-            else:
-                file_path, line, col = location_data
-                original_msg = None
+        # Locations (skip for linker issues since they have no source location)
+        if not is_linker:
+            print(f"  {Color.BOLD}Occurrences ({group.count}):{Color.NC}")
             
-            location = format_issue_location(file_path, line, col)
+            for i, location_data in enumerate(group.locations[:max_locations]):
+                # Handle both old (3-tuple) and new (4-tuple) format
+                if len(location_data) == 4:
+                    file_path, line, col, original_msg = location_data
+                else:
+                    file_path, line, col = location_data
+                    original_msg = None
+                
+                location = format_issue_location(file_path, line, col)
+                
+                # Wrap long paths
+                if len(location) > terminal_width - 6:
+                    location = "..." + location[-(terminal_width - 9):]
             
-            # Wrap long paths
-            if len(location) > terminal_width - 6:
-                location = "..." + location[-(terminal_width - 9):]
+                # Extract variable/function name from original message if different from grouped message
+                detail_suffix = ""
+                if original_msg and original_msg != group.issue.message:
+                    # Extract quoted parts (variable names, etc.)
+                    import re
+                    quoted = re.findall(r"'([^']*)'", original_msg)
+                    if quoted:
+                        detail_suffix = f" {Color.DIM}({', '.join(quoted)}){Color.NC}"
+                
+                print(f"    {Color.CYAN}{location}{Color.NC}{detail_suffix}")
             
-            # Extract variable/function name from original message if different from grouped message
-            detail_suffix = ""
-            if original_msg and original_msg != group.issue.message:
-                # Extract quoted parts (variable names, etc.)
-                import re
-                quoted = re.findall(r"'([^']*)'", original_msg)
-                if quoted:
-                    detail_suffix = f" {Color.DIM}({', '.join(quoted)}){Color.NC}"
+            if group.count > max_locations:
+                remaining = group.count - max_locations
+                print(f"    {Color.DIM}... and {remaining} more{Color.NC}")
+        else:
+            # For linker issues, show affected libraries/symbols and targets
+            print(f"  {Color.BOLD}Occurrences: {group.count}{Color.NC}")
             
-            print(f"    {Color.CYAN}{location}{Color.NC}{detail_suffix}")
-        
-        if group.count > max_locations:
-            remaining = group.count - max_locations
-            print(f"    {Color.DIM}... and {remaining} more{Color.NC}")
+            # Parse file field: can be "library" or "library|target"
+            lib_target_pairs = []
+            for loc in group.locations:
+                file_info = loc[0]  # Can be "library|target" or just "library"
+                if '|' in file_info:
+                    lib, target = file_info.split('|', 1)
+                    lib_target_pairs.append((lib, target))
+                elif file_info:
+                    lib_target_pairs.append((file_info, None))
+            
+            # Group by library
+            libs_with_targets = {}
+            for lib, target in lib_target_pairs:
+                if lib not in libs_with_targets:
+                    libs_with_targets[lib] = set()
+                if target:
+                    libs_with_targets[lib].add(target)
+            
+            # Display libraries and their affected targets
+            for lib in sorted(libs_with_targets.keys()):
+                targets = libs_with_targets[lib]
+                if targets:
+                    print(f"    {Color.CYAN}{lib}{Color.NC} (in: {Color.DIM}{', '.join(sorted(targets))}{Color.NC})")
+                else:
+                    print(f"    {Color.CYAN}{lib}{Color.NC}")
 
 
 def print_build_stats(stats: BuildStats, success: bool):

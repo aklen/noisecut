@@ -5,6 +5,7 @@ GCC/G++ compiler output parser
 import re
 from typing import Optional
 from pathlib import Path
+from collections import deque
 
 from .base import BaseParser
 from ..model import BuildIssue
@@ -13,6 +14,11 @@ from ..utils import Color
 
 class GccParser(BaseParser):
     """Parser for GCC and G++ compiler output (also handles Clang)"""
+    
+    def __init__(self):
+        super().__init__()
+        # Buffer last N lines to find linking target for linker warnings
+        self._line_buffer = deque(maxlen=5)  # Keep last 5 lines
     
     # Patterns for compiler output
     COMPILE_PATTERN = re.compile(
@@ -38,6 +44,16 @@ class GccParser(BaseParser):
         r'^(.*?):(\d+):\([^)]+\):\s+(.+)$'
     )
     
+    # Linker warning/error from ld (e.g., ld: warning: ignoring duplicate libraries: '-lc++')
+    LD_WARNING_PATTERN = re.compile(
+        r'^ld:\s+(warning|error):\s+(.+)$'
+    )
+    
+    # CMake/Make linking line pattern (e.g., "[ 90%] Linking CXX shared library ../../lib/libFoo.dylib")
+    LINKING_PATTERN = re.compile(
+        r'^\s*\[\s*\d+%\]\s+Linking\s+(?:CXX|C)\s+(?:shared library|executable|static library)\s+(.+)$'
+    )
+    
     # Generic error pattern (e.g., collect2: error: ld returned 1 exit status)
     GENERIC_ERROR_PATTERN = re.compile(
         r'^collect2:\s+error:\s+(.+)$'
@@ -51,8 +67,22 @@ class GccParser(BaseParser):
         r'^\s+\d+\s+\|'  # Line showing source code context
     )
     
+    def _extract_target_from_buffer(self) -> str:
+        """Search line buffer backwards for most recent linking target."""
+        # Search backwards through buffer for "Linking..." line
+        for buffered_line in reversed(self._line_buffer):
+            match = self.LINKING_PATTERN.match(buffered_line)
+            if match:
+                # Extract target name from path (e.g., "../../lib/libFoo.dylib" -> "libFoo.dylib")
+                full_path = match.group(1)
+                return Path(full_path).name
+        return ""  # No target found
+    
     def parse_line(self, line: str) -> Optional[str]:
         """Parse a single line of GCC output. Returns formatted line or None."""
+        
+        # Add to line buffer for linker target tracking
+        self._line_buffer.append(line)
         
         # Check for compilation
         compile_match = self.COMPILE_PATTERN.match(line)
@@ -125,6 +155,42 @@ class GccParser(BaseParser):
             )
             
             self.stats.errors += 1
+            return None
+        
+        # Check for linker warnings/errors from ld (e.g., ld: warning: ignoring duplicate libraries)
+        ld_match = self.LD_WARNING_PATTERN.match(line)
+        if ld_match:
+            issue_type, message = ld_match.groups()
+            
+            # Save previous issue
+            if self.current_issue:
+                self.issues.append(self.current_issue)
+            
+            # Extract library/symbol names from quotes in the message
+            import re
+            quoted_items = re.findall(r"'([^']+)'", message)
+            library_name = quoted_items[0] if quoted_items else ""
+            
+            # Try to find linking target from recent lines
+            target_name = self._extract_target_from_buffer()
+            
+            # Create new issue with linker-specific type
+            # Store: library_name|target_name in file field (pipe-separated)
+            file_info = f"{library_name}|{target_name}" if target_name else library_name
+            
+            self.current_issue = BuildIssue(
+                type=f'linker-{issue_type}',  # 'linker-warning' or 'linker-error'
+                file=file_info,  # "library|target" or just "library"
+                line=0,
+                column=0,
+                message=message,
+                category=""
+            )
+            
+            if issue_type == 'warning':
+                self.stats.warnings += 1
+            else:
+                self.stats.errors += 1
             return None
         
         # Check for generic errors (e.g., collect2: error: ld returned 1 exit status)

@@ -164,7 +164,7 @@ class AutoDetectParser(BaseParser):
         self._lines_checked = 0
         self._buffered_lines = []  # Store lines for format analysis
         self._max_buffer = 100  # Store first 100 lines for analysis
-        self._max_lines_to_check = 50  # Try detection for 50 lines before fallback
+        self._max_lines_to_check = 100  # Try detection for 100 lines before fallback
     
     def parse_line(self, line: str) -> Optional[str]:
         """Parse a line, auto-detecting the compiler if needed."""

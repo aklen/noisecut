@@ -28,7 +28,7 @@ def register_all_compilers():
         parser_class=GccParser,
         extensions=['.c', '.cpp', '.cc', '.cxx', '.h', '.hpp'],
         project_files=['Makefile', 'GNUmakefile', 'makefile', 'CMakeLists.txt'],
-        detection_keywords=['gcc', 'g++', 'gnu'],
+        detection_keywords=['gcc', 'g++', 'gnu', 'Building CXX object'],
         command_patterns=['gcc', 'g++', '/usr/bin/gcc', '/usr/bin/g++']
     )
     
@@ -39,7 +39,7 @@ def register_all_compilers():
         parser_class=ClangParser,
         extensions=['.c', '.cpp', '.cc', '.cxx', '.h', '.hpp'],
         project_files=['CMakeLists.txt', 'Makefile'],
-        detection_keywords=['clang', 'clang++', 'llvm'],
+        detection_keywords=['clang', 'clang++', 'llvm', 'Building CXX object'],
         command_patterns=['clang', 'clang++', '/usr/bin/clang', '/usr/bin/clang++']
     )
     
