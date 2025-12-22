@@ -128,7 +128,7 @@ def run_build(command: List[str], verbose: bool = False,
 def main():
     """Main entry point for the CLI"""
     parser = argparse.ArgumentParser(
-        description=f'Build output analyzer for C/C++ projects (v{__version__})',
+        description=f'Build output analyzer for C/C++/.NET projects (v{__version__})',
         prog='ncut'
     )
     parser.add_argument(
@@ -172,7 +172,7 @@ def main():
     parser.add_argument(
         '--parser',
         type=str,
-        choices=['auto', 'gcc', 'clang', 'avr-gcc'],
+        choices=['auto', 'gcc', 'clang', 'avr-gcc', 'dotnet'],
         default='auto',
         help='Parser to use (default: auto-detect)'
     )
