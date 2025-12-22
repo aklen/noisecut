@@ -109,8 +109,22 @@ def print_issue_summary(grouped_issues: List[GroupedIssue], max_locations: int =
             else:
                 header_suffix = ""
         
+        # Format message for better readability
+        display_message = issue.message
+        
+        # Improve deprecated warnings: "is deprecated: Use X" -> "found deprecated ...: use X"
+        if issue.category == "-Wdeprecated-declarations":
+            import re
+            # Pattern: "is deprecated: Use X instead"
+            match = re.match(r"^is deprecated:\s*(.+)$", display_message, re.IGNORECASE)
+            if match:
+                suggestion = match.group(1)
+                # Lowercase "Use" to "use" for consistency
+                suggestion = suggestion[0].lower() + suggestion[1:] if suggestion else suggestion
+                display_message = f"found deprecated declaration: {suggestion}"
+        
         # Header: WARNING always yellow, but severity badge can be red
-        print(f"\n{color}{Color.BOLD}{icon} {issue.type.upper()}{Color.NC}{header_suffix}: {issue.message}")
+        print(f"\n{color}{Color.BOLD}{icon} {issue.type.upper()}{Color.NC}{header_suffix}: {display_message}")
         
         if issue.category:
             print(f"  {Color.DIM}Category: {issue.category}{Color.NC}")
