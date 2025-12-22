@@ -1,5 +1,7 @@
 """
 Parser factory and auto-detection
+
+Uses the compiler registry for streamlined detection and instantiation.
 """
 
 import os
@@ -7,39 +9,44 @@ import re
 from typing import Optional
 from pathlib import Path
 from .base import BaseParser
-from .gcc import GccParser
-from .clang import ClangParser
-from .avr_gcc import AvrGccParser
-from .dotnet import DotNetParser
+from .registry import (
+    get_parser,
+    get_compiler_by_keyword,
+    get_compiler_by_project_files,
+    COMPILER_REGISTRY
+)
+# Import to trigger registration
+from . import builtin
 
 
 def detect_parser(line: str) -> Optional[str]:
     """
     Detect which parser to use based on a line of compiler output.
+    Uses the compiler registry for detection.
     
     Args:
         line: A line from compiler output
         
     Returns:
-        Parser name ('gcc', 'clang', 'avr-gcc', 'dotnet') or None if not detected
+        Parser name (registry key) or None if not detected
     """
     line_lower = line.lower()
     
-    # Check for .NET build patterns
-    if 'dotnet build' in line_lower or 'msbuild' in line_lower:
-        return 'dotnet'
-    if re.search(r'net\d+\.\d+\s+succeeded', line_lower):
-        return 'dotnet'
+    # Check each registered compiler's detection keywords
+    for key, metadata in COMPILER_REGISTRY.items():
+        # Check command patterns
+        for pattern in metadata.command_patterns:
+            if pattern in line_lower:
+                return key
+        
+        # Check detection keywords
+        for keyword in metadata.detection_keywords:
+            if keyword in line_lower:
+                return key
+    
+    # Special format detection for .NET
     if re.search(r'\(\d+,\d+\):\s+(warning|error)\s+[A-Z]{2}\d{4}:', line):
         return 'dotnet'
-    
-    # Check for compiler executable in the line
-    if 'avr-gcc' in line_lower or 'avr-g++' in line_lower:
-        return 'avr-gcc'
-    elif 'clang++' in line_lower or 'clang' in line_lower:
-        return 'clang'
-    elif 'g++' in line_lower or 'gcc' in line_lower:
-        return 'gcc'
     
     return None
 
@@ -73,23 +80,30 @@ def detect_from_warning_format(lines: list) -> Optional[str]:
 
 def detect_from_project_files() -> Optional[str]:
     """
-    Try to detect compiler from project files (Makefile, CMakeLists.txt, .csproj, etc).
+    Try to detect compiler from project files using the registry.
     
     Returns:
         Parser name or None
     """
     cwd = Path.cwd()
     
-    # Check for .NET project files
-    csproj_files = list(cwd.glob('*.csproj')) + list(cwd.glob('*/*.csproj'))
-    if csproj_files:
-        return 'dotnet'
+    # Collect all project files in current directory
+    project_files = []
     
-    sln_files = list(cwd.glob('*.sln'))
-    if sln_files:
-        return 'dotnet'
+    # Check for specific project files from registry
+    for key, metadata in COMPILER_REGISTRY.items():
+        for pattern in metadata.project_files:
+            # Handle glob patterns
+            if '*' in pattern:
+                matches = list(cwd.glob(pattern))
+                if matches:
+                    return key
+            else:
+                # Direct file check
+                if (cwd / pattern).exists():
+                    return key
     
-    # Check Makefile
+    # Check Makefile content for compiler hints
     makefile_paths = [
         cwd / 'Makefile',
         cwd / 'makefile',
@@ -100,40 +114,13 @@ def detect_from_project_files() -> Optional[str]:
         if makefile.exists():
             try:
                 content = makefile.read_text(encoding='utf-8', errors='ignore').lower()
-                if 'dotnet build' in content or 'msbuild' in content:
-                    return 'dotnet'
-                elif 'avr-gcc' in content or 'avr-g++' in content:
-                    return 'avr-gcc'
-                elif 'clang++' in content or 'clang' in content:
-                    return 'clang'
-                elif 'gcc' in content or 'g++' in content:
-                    return 'gcc'
+                # Check each compiler's detection keywords
+                for key, metadata in COMPILER_REGISTRY.items():
+                    for keyword in metadata.detection_keywords:
+                        if keyword in content:
+                            return key
             except:
                 pass
-    
-    # Check CMakeLists.txt
-    cmake_file = cwd / 'CMakeLists.txt'
-    if cmake_file.exists():
-        try:
-            content = cmake_file.read_text(encoding='utf-8', errors='ignore').lower()
-            if 'avr-gcc' in content:
-                return 'avr-gcc'
-            elif 'clang' in content:
-                return 'clang'
-        except:
-            pass
-    
-    # Check PKGBUILD (Arch Linux package)
-    pkgbuild = cwd / 'PKGBUILD'
-    if pkgbuild.exists():
-        try:
-            content = pkgbuild.read_text(encoding='utf-8', errors='ignore').lower()
-            if 'avr-gcc' in content or 'avr-g++' in content:
-                return 'avr-gcc'
-            elif 'clang' in content:
-                return 'clang'
-        except:
-            pass
     
     return None
 
@@ -141,27 +128,23 @@ def detect_from_project_files() -> Optional[str]:
 def create_parser(parser_type: str) -> BaseParser:
     """
     Create a parser instance based on type.
+    Uses the compiler registry for instantiation.
     
     Args:
-        parser_type: One of 'gcc', 'clang', 'avr-gcc', 'dotnet', or 'auto'
+        parser_type: Compiler key from registry, or 'auto'
         
     Returns:
         Parser instance
     """
-    if parser_type == 'clang':
-        return ClangParser()
-    elif parser_type == 'avr-gcc':
-        return AvrGccParser()
-    elif parser_type == 'dotnet':
-        return DotNetParser()
-    elif parser_type == 'gcc':
-        return GccParser()
-    elif parser_type == 'auto':
+    if parser_type == 'auto':
         # Return a special parser that auto-detects
         return AutoDetectParser()
-    else:
-        # Default to GCC
-        return GccParser()
+    
+    try:
+        return get_parser(parser_type)
+    except KeyError:
+        # Fallback to GCC if unknown compiler
+        return get_parser('gcc')
 
 
 class AutoDetectParser(BaseParser):

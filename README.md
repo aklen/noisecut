@@ -7,9 +7,10 @@ A Python build output analyzer for C/C++/.NET that groups warnings by severity a
 ## Features
 
 - **Smart Grouping** - Groups warnings by category (e.g., all "unused parameter" warnings together)
-- **Severity Classification** - 5-level system (INFO→LOW→MEDIUM→HIGH→CRITICAL) with 50+ warning types
+- **Severity Classification** - 5-level system (INFO→LOW→MEDIUM→HIGH→CRITICAL) with 100+ warning types
 - **Visual Priority** - Critical warnings at bottom in red, no scrolling needed
 - **Auto-Detection** - Recognizes GCC, Clang, AVR-GCC, .NET/MSBuild automatically
+- **Extensible** - Add new compilers in ~3 lines via registry system
 - **Parse Anywhere** - Works with live builds, saved logs, CI/CD output
 - **Zero Dependencies** - Pure Python 3.7+ stdlib
 
