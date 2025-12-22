@@ -81,6 +81,61 @@ SEVERITY_MAP = {
     "-Wcpp": Severity.INFO,
     "-Wpragmas": Severity.INFO,
     "-W#warnings": Severity.INFO,
+    
+    # .NET/C# Critical - Nullability & Memory Safety
+    "-WCS8600": Severity.CRITICAL,  # Converting null literal or possible null value to non-nullable type
+    "-WCS8601": Severity.CRITICAL,  # Possible null reference assignment
+    "-WCS8602": Severity.CRITICAL,  # Dereference of a possibly null reference
+    "-WCS8603": Severity.CRITICAL,  # Possible null reference return
+    "-WCS8604": Severity.CRITICAL,  # Possible null reference argument
+    "-WCS8605": Severity.CRITICAL,  # Unboxing a possibly null value
+    "-WCS8625": Severity.CRITICAL,  # Cannot convert null literal to non-nullable reference type
+    "-WCS8618": Severity.CRITICAL,  # Non-nullable field must contain a non-null value when exiting constructor
+    
+    # .NET High - Likely bugs
+    "-WCS0162": Severity.HIGH,      # Unreachable code detected
+    "-WCS0219": Severity.HIGH,      # Variable is assigned but its value is never used
+    "-WCS0472": Severity.HIGH,      # Result of expression is always the same
+    "-WCS1717": Severity.HIGH,      # Assignment made to same variable
+    "-WCS8509": Severity.HIGH,      # Switch expression does not handle all possible values
+    "-WCS8524": Severity.HIGH,      # Switch expression does not handle some null inputs
+    "-WCS8073": Severity.HIGH,      # Result of expression is always the same (nullable)
+    
+    # .NET Medium - Code quality
+    "-WCS0168": Severity.MEDIUM,    # Variable declared but never used
+    "-WCS0414": Severity.MEDIUM,    # Field assigned but its value never used
+    "-WCS0649": Severity.MEDIUM,    # Field never assigned to, always has default value
+    "-WCS0169": Severity.MEDIUM,    # Field is never used
+    "-WCS1998": Severity.MEDIUM,    # Async method lacks await operators
+    "-WCS8019": Severity.MEDIUM,    # Unnecessary using directive
+    "-WCS8632": Severity.MEDIUM,    # Nullable annotation should only be used in code within '#nullable' context
+    
+    # .NET Low - Obsolete APIs & Style
+    "-WSYSLIB0001": Severity.LOW,   # Obsolete: UTF7Encoding
+    "-WSYSLIB0011": Severity.LOW,   # Obsolete: BinaryFormatter
+    "-WSYSLIB0021": Severity.LOW,   # Obsolete: Derived cryptographic types
+    "-WSYSLIB0022": Severity.LOW,   # Obsolete: Rijndael and RijndaelManaged
+    "-WSYSLIB0023": Severity.LOW,   # Obsolete: RNGCryptoServiceProvider
+    "-WSYSLIB0032": Severity.LOW,   # Obsolete: Recovery from corrupted state exceptions
+    "-WSYSLIB0041": Severity.LOW,   # Obsolete: Some Rfc2898DeriveBytes constructors
+    "-WSYSLIB0050": Severity.LOW,   # Obsolete: Formatter-based serialization
+    "-WSYSLIB0051": Severity.LOW,   # Obsolete: Legacy serialization infrastructure
+    "-WSYSLIB0057": Severity.LOW,   # Obsolete: X509Certificate constructors
+    "-WCS0618": Severity.LOW,       # Type or member is obsolete
+    "-WCS0612": Severity.LOW,       # Type or member is obsolete (no message)
+    
+    # Code Analysis (CA####)
+    "-WCA1031": Severity.MEDIUM,    # Do not catch general exception types
+    "-WCA1062": Severity.HIGH,      # Validate arguments of public methods
+    "-WCA1304": Severity.MEDIUM,    # Specify CultureInfo
+    "-WCA1305": Severity.MEDIUM,    # Specify IFormatProvider
+    "-WCA1822": Severity.LOW,       # Mark members as static
+    "-WCA2007": Severity.LOW,       # Do not directly await a Task
+    
+    # Roslyn IDE (IDE####)
+    "-WIDE0001": Severity.LOW,      # Simplify names
+    "-WIDE0003": Severity.LOW,      # Remove this or Me qualification
+    "-WIDE0005": Severity.LOW,      # Remove unnecessary using directives
 }
 
 

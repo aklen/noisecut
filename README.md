@@ -2,14 +2,14 @@
 
 Cut through compiler noise. See what really matters.
 
-A Python build output analyzer for C/C++ that groups warnings by severity and category, making critical issues immediately visible.
+A Python build output analyzer for C/C++/.NET that groups warnings by severity and category, making critical issues immediately visible.
 
 ## Features
 
 - **Smart Grouping** - Groups warnings by category (e.g., all "unused parameter" warnings together)
 - **Severity Classification** - 5-level system (INFO→LOW→MEDIUM→HIGH→CRITICAL) with 50+ warning types
 - **Visual Priority** - Critical warnings at bottom in red, no scrolling needed
-- **Auto-Detection** - Recognizes GCC, Clang, AVR-GCC automatically
+- **Auto-Detection** - Recognizes GCC, Clang, AVR-GCC, .NET/MSBuild automatically
 - **Parse Anywhere** - Works with live builds, saved logs, CI/CD output
 - **Zero Dependencies** - Pure Python 3.7+ stdlib
 

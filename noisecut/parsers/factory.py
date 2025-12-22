@@ -10,6 +10,7 @@ from .base import BaseParser
 from .gcc import GccParser
 from .clang import ClangParser
 from .avr_gcc import AvrGccParser
+from .dotnet import DotNetParser
 
 
 def detect_parser(line: str) -> Optional[str]:
@@ -20,9 +21,17 @@ def detect_parser(line: str) -> Optional[str]:
         line: A line from compiler output
         
     Returns:
-        Parser name ('gcc', 'clang', 'avr-gcc') or None if not detected
+        Parser name ('gcc', 'clang', 'avr-gcc', 'dotnet') or None if not detected
     """
     line_lower = line.lower()
+    
+    # Check for .NET build patterns
+    if 'dotnet build' in line_lower or 'msbuild' in line_lower:
+        return 'dotnet'
+    if re.search(r'net\d+\.\d+\s+succeeded', line_lower):
+        return 'dotnet'
+    if re.search(r'\(\d+,\d+\):\s+(warning|error)\s+[A-Z]{2}\d{4}:', line):
+        return 'dotnet'
     
     # Check for compiler executable in the line
     if 'avr-gcc' in line_lower or 'avr-g++' in line_lower:
@@ -47,6 +56,10 @@ def detect_from_warning_format(lines: list) -> Optional[str]:
     """
     # Look for compiler-specific warning patterns
     for line in lines:
+        # .NET/MSBuild pattern: file.cs(76,34): warning CS0168:
+        if re.search(r'\(\d+,\d+\):\s+(warning|error)\s+[A-Z]{2}\d{4}:', line):
+            return 'dotnet'
+        
         # AVR-GCC often has AVR-specific warnings
         if 'avr' in line.lower() and ('warning' in line.lower() or 'error' in line.lower()):
             return 'avr-gcc'
@@ -60,12 +73,21 @@ def detect_from_warning_format(lines: list) -> Optional[str]:
 
 def detect_from_project_files() -> Optional[str]:
     """
-    Try to detect compiler from project files (Makefile, CMakeLists.txt, PKGBUILD, etc).
+    Try to detect compiler from project files (Makefile, CMakeLists.txt, .csproj, etc).
     
     Returns:
         Parser name or None
     """
     cwd = Path.cwd()
+    
+    # Check for .NET project files
+    csproj_files = list(cwd.glob('*.csproj')) + list(cwd.glob('*/*.csproj'))
+    if csproj_files:
+        return 'dotnet'
+    
+    sln_files = list(cwd.glob('*.sln'))
+    if sln_files:
+        return 'dotnet'
     
     # Check Makefile
     makefile_paths = [
@@ -78,7 +100,9 @@ def detect_from_project_files() -> Optional[str]:
         if makefile.exists():
             try:
                 content = makefile.read_text(encoding='utf-8', errors='ignore').lower()
-                if 'avr-gcc' in content or 'avr-g++' in content:
+                if 'dotnet build' in content or 'msbuild' in content:
+                    return 'dotnet'
+                elif 'avr-gcc' in content or 'avr-g++' in content:
                     return 'avr-gcc'
                 elif 'clang++' in content or 'clang' in content:
                     return 'clang'
@@ -119,7 +143,7 @@ def create_parser(parser_type: str) -> BaseParser:
     Create a parser instance based on type.
     
     Args:
-        parser_type: One of 'gcc', 'clang', 'avr-gcc', or 'auto'
+        parser_type: One of 'gcc', 'clang', 'avr-gcc', 'dotnet', or 'auto'
         
     Returns:
         Parser instance
@@ -128,6 +152,8 @@ def create_parser(parser_type: str) -> BaseParser:
         return ClangParser()
     elif parser_type == 'avr-gcc':
         return AvrGccParser()
+    elif parser_type == 'dotnet':
+        return DotNetParser()
     elif parser_type == 'gcc':
         return GccParser()
     elif parser_type == 'auto':
