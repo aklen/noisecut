@@ -69,6 +69,49 @@ def parse_from_file(file_path: str, verbose: bool = False,
     return return_code, parser.stats, parser.issues
 
 
+def parse_from_stdin(verbose: bool = False,
+                    parser=None) -> Tuple[int, BuildStats, List[BuildIssue]]:
+    """
+    Parse build output from stdin (pipe).
+    
+    Args:
+        verbose: If True, print all lines; if False, only formatted lines
+        parser: Parser instance to use (defaults to AutoDetectParser)
+        
+    Returns:
+        Tuple of (return_code, stats, issues)
+    """
+    if parser is None:
+        parser = AutoDetectParser()
+    
+    start_time = time.time()
+    
+    try:
+        for line in sys.stdin:
+            line = line.rstrip()
+            
+            # Parse line
+            formatted = parser.parse_line(line)
+            
+            # Print if verbose or it's a formatted message
+            if verbose:
+                print(line)
+            elif formatted:
+                print(formatted)
+        
+        # Assume success if we could parse the input
+        return_code = 0 if parser.stats.errors == 0 else 1
+        
+    except KeyboardInterrupt:
+        print(f"\n{Color.YELLOW}Parsing interrupted{Color.NC}")
+        return 130, parser.stats, []
+    
+    parser.finalize()
+    parser.stats.duration = time.time() - start_time
+    
+    return return_code, parser.stats, parser.issues
+
+
 def run_build(command: List[str], verbose: bool = False,
               parser=None) -> Tuple[int, BuildStats, List[BuildIssue]]:
     """
@@ -200,6 +243,11 @@ def main():
         return_code, stats, issues = parse_from_file(
             args.file, args.verbose, parser_instance
         )
+    # Check if input is coming from stdin (pipe)
+    elif not sys.stdin.isatty():
+        # Read from stdin
+        print("Reading from stdin...\n")
+        return_code, stats, issues = parse_from_stdin(args.verbose, parser_instance)
     else:
         # Change to build directory if not already there
         if not os.path.exists('Makefile'):
