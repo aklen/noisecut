@@ -11,6 +11,7 @@ from typing import List, Tuple
 
 from .model import BuildIssue, BuildStats
 from .parsers.factory import create_parser, AutoDetectParser
+from .parsers.registry import list_compilers
 from .grouper import group_issues
 from .reporter import print_issue_summary, print_build_stats
 from .utils import Color
@@ -169,10 +170,13 @@ def main():
         action='store_true',
         help='Disable severity level display for warnings'
     )
+    
+    # Dynamically get available compilers from registry
+    available_compilers = ['auto'] + list_compilers()
     parser.add_argument(
         '--parser',
         type=str,
-        choices=['auto', 'gcc', 'clang', 'avr-gcc', 'dotnet'],
+        choices=available_compilers,
         default='auto',
         help='Parser to use (default: auto-detect)'
     )

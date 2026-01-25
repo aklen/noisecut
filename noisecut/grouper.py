@@ -113,13 +113,20 @@ def group_issues(issues: List[BuildIssue]) -> List[GroupedIssue]:
         
         # Add location with original message (for showing variable names)
         location = (issue.file, issue.line, issue.column, issue.message)
-        # Deduplicate based on normalized path + line + column
-        # This handles different relative paths to the same file
-        normalized_path = normalize_path_for_dedup(issue.file)
-        location_key = (normalized_path, issue.line, issue.column)
-        existing_locations = [(normalize_path_for_dedup(f), l, c) for f, l, c, _ in groups[key].locations]
-        if location_key not in existing_locations:
+        
+        # For linker issues, don't deduplicate - just count occurrences
+        is_linker = issue.type.startswith('linker-')
+        if is_linker:
+            # Always add linker issues to track occurrence count
             groups[key].locations.append(location)
+        else:
+            # Deduplicate based on normalized path + line + column
+            # This handles different relative paths to the same file
+            normalized_path = normalize_path_for_dedup(issue.file)
+            location_key = (normalized_path, issue.line, issue.column)
+            existing_locations = [(normalize_path_for_dedup(f), l, c) for f, l, c, _ in groups[key].locations]
+            if location_key not in existing_locations:
+                groups[key].locations.append(location)
     
     # Sort by count (most common first)
     return sorted(groups.values(), key=lambda g: g.count, reverse=True)

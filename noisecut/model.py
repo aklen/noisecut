@@ -9,7 +9,7 @@ from typing import List, Tuple
 @dataclass
 class BuildIssue:
     """Represents a compiler warning or error"""
-    type: str  # 'warning' or 'error'
+    type: str  # 'warning', 'error', 'linker-warning', or 'linker-error'
     file: str
     line: int
     column: int
