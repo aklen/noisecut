@@ -1,0 +1,55 @@
+warning: profiles for the non root package will be ignored, specify profiles at the workspace root:
+package:   /Users/aklen/dev/helix/helix-poc-avr/Cargo.toml
+workspace: /Users/aklen/dev/helix/Cargo.toml
+warning: unused import: `HwState::*`
+ --> helix-core/src/machine.rs:3:5
+  |
+3 | use HwState::*;
+  |     ^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `helix-core` (lib) generated 1 warning (run `cargo fix --lib -p helix-core` to apply 1 suggestion)
+   Compiling helix-poc-avr v0.1.0 (/Users/aklen/dev/helix/helix-poc-avr)
+error[E0433]: failed to resolve: could not find `interrupt` in `avr_device`
+   --> helix-poc-avr/src/main.rs:193:15
+    |
+193 | #[avr_device::interrupt(atmega32u4)]
+    |               ^^^^^^^^^ could not find `interrupt` in `avr_device`
+    |
+note: found an item that was configured out
+   --> /Users/aklen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/avr-device-0.5.4/src/lib.rs:182:28
+    |
+181 | #[cfg(feature = "rt")]
+    |       -------------- the item is gated behind the `rt` feature
+182 | pub use avr_device_macros::interrupt;
+    |                            ^^^^^^^^^
+
+warning: unused import: `LedColor`
+ --> helix-poc-avr/src/main.rs:9:22
+  |
+9 |     action::{Action, LedColor},
+  |                      ^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+error[E0308]: mismatched types
+   --> helix-poc-avr/src/main.rs:104:34
+    |
+104 |     apply_actions(&mut gpio_svc, init_actions);
+    |     -------------                ^^^^^^^^^^^^ expected `16`, found `8`
+    |     |
+    |     arguments to this function are incorrect
+    |
+    = note: expected struct `Vec<_, 16>`
+               found struct `Vec<_, 8>`
+note: function defined here
+   --> helix-poc-avr/src/main.rs:168:4
+    |
+168 | fn apply_actions<BTN, LED>(gpio_svc: &mut GpioService<BTN, LED>, actions: heapless::Vec<Action, 16>)
+    |    ^^^^^^^^^^^^^                                                 ----------------------------------
+
+Some errors have detailed explanations: E0308, E0433.
+For more information about an error, try `rustc --explain E0308`.
+warning: `helix-poc-avr` (bin "helix-poc-avr") generated 1 warning
+error: could not compile `helix-poc-avr` (bin "helix-poc-avr") due to 2 previous errors; 1 warning emitted
