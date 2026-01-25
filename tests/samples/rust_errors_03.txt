@@ -1,0 +1,487 @@
+No matching processes were found
+warning: unused import: `crate::field::FieldMode`
+    --> helix-physics/src/ifgu.rs:1504:13
+     |
+1504 |         use crate::field::FieldMode;
+     |             ^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `idx`
+  --> helix-physics/src/field_sector.rs:85:17
+   |
+85 |             let idx = field.index(x, y);
+   |                 ^^^ help: if this is intentional, prefix it with an underscore: `_idx`
+   |
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `y_min`
+   --> helix-physics/src/field_sector.rs:343:9
+    |
+343 |         y_min: usize,
+    |         ^^^^^ help: if this is intentional, prefix it with an underscore: `_y_min`
+
+warning: unused variable: `y_max`
+   --> helix-physics/src/field_sector.rs:344:9
+    |
+344 |         y_max: usize,
+    |         ^^^^^ help: if this is intentional, prefix it with an underscore: `_y_max`
+
+warning: unused variable: `source_re`
+   --> helix-physics/src/relaxation.rs:652:13
+    |
+652 |         let source_re = 0.0;
+    |             ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_source_re`
+
+warning: unused variable: `source_im`
+   --> helix-physics/src/relaxation.rs:653:13
+    |
+653 |         let source_im = 0.0;
+    |             ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_source_im`
+
+warning: unused variable: `k`
+   --> helix-physics/src/relaxation.rs:656:13
+    |
+656 |         let k: f64 = k_squared.sqrt();
+    |             ^ help: if this is intentional, prefix it with an underscore: `_k`
+
+warning: unused variable: `center`
+   --> helix-physics/src/ifgu.rs:521:58
+    |
+521 | ...ission { center, radius, base_transmission } => {
+    |             ^^^^^^ help: try ignoring the field: `center: _`
+
+warning: unused variable: `radius`
+   --> helix-physics/src/ifgu.rs:521:66
+    |
+521 | ... center, radius, base_transmission } => {
+    |             ^^^^^^ help: try ignoring the field: `radius: _`
+
+warning: unused variable: `caption`
+   --> helix-physics/src/visualization_v2.rs:425:9
+    |
+425 |         caption: Option<&str>,
+    |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_caption`
+
+warning: unused variable: `attractors`
+  --> helix-physics/src/attractor_visualization.rs:89:9
+   |
+89 |         attractors: &[AttractorMetadata],
+   |         ^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_attractors`
+
+warning: unused variable: `x_center`
+   --> helix-physics/src/attractor_visualization.rs:366:17
+    |
+366 |             let x_center = idx as f64 + 0.5;
+    |                 ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_x_center`
+
+warning: unused variable: `cell_width`
+   --> helix-physics/src/attractor_visualization.rs:742:13
+    |
+742 |         let cell_width = 1.0 / width as f64;
+    |             ^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_cell_width`
+
+warning: unused variable: `cell_height`
+   --> helix-physics/src/attractor_visualization.rs:743:13
+    |
+743 |         let cell_height = 1.0 / height as f64;
+    |             ^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_cell_height`
+
+warning: unused variable: `bar_height`
+   --> helix-physics/src/attractor_visualization.rs:813:17
+    |
+813 |             let bar_height = (legend_y_end - legend_y_start) / legend...
+    |                 ^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_bar_height`
+
+warning: unused variable: `density_at_min`
+   --> helix-physics/src/attractor_visualization.rs:823:13
+    |
+823 |         let density_at_min = min_density;
+    |             ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_density_at_min`
+
+warning: unused variable: `density_at_max`
+   --> helix-physics/src/attractor_visualization.rs:824:13
+    |
+824 |         let density_at_max = max_density;
+    |             ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_density_at_max`
+
+warning: unused variable: `cell_width`
+   --> helix-physics/src/attractor_visualization.rs:897:13
+    |
+897 |         let cell_width = 1.0 / width as f64;
+    |             ^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_cell_width`
+
+warning: unused variable: `cell_height`
+   --> helix-physics/src/attractor_visualization.rs:898:13
+    |
+898 |         let cell_height = 1.0 / height as f64;
+    |             ^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_cell_height`
+
+warning: variable does not need to be mutable
+   --> helix-physics/src/basin_scan.rs:280:13
+    |
+280 | ...   let mut rng_state = (cluster_id as u64 * 1000 + trial as u64) a...
+    |           ----^^^^^^^^^
+    |           |
+    |           help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: variable does not need to be mutable
+   --> helix-physics/src/basin_scan.rs:281:13
+    |
+281 |         let mut perturbed = InitialPoint {
+    |             ----^^^^^^^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> helix-physics/src/basin_scan.rs:439:9
+    |
+439 |     let mut clusters = cluster_fixpoints(&fixpoints, cluster_threshold);
+    |         ----^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: `helix-physics` (lib) generated 22 warnings (run `cargo fix --lib -p helix-physics` to apply 22 suggestions)
+   Compiling helix-physics v0.1.0 (/Users/aklen/dev/helix/helix-physics)
+warning: unused import: `helix_physics::tfm::SkeletonizationExtractor`
+   --> helix-physics/tests/relaxation_tests.rs:891:13
+    |
+891 |         use helix_physics::tfm::SkeletonizationExtractor;
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused imports: `FieldMode` and `FieldSpec`
+    --> helix-physics/tests/relaxation_tests.rs:3347:36
+     |
+3347 |         use helix_physics::field::{FieldMode, FieldSpec};
+     |                                    ^^^^^^^^^  ^^^^^^^^^
+
+warning: unused import: `helix_physics::field_sector::FieldSectorManager`
+    --> helix-physics/tests/relaxation_tests.rs:3348:13
+     |
+3348 |         use helix_physics::field_sector::FieldSectorManager;
+     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `InvariantDrivenRelaxation`, `InvariantMetricType`, `InvariantSet`, and `Invariant`
+    --> helix-physics/tests/relaxation_tests.rs:3349:35
+     |
+3349 | ...::{Invariant, InvariantSet, InvariantMetricType, InvariantDrivenRelaxation};
+     |       ^^^^^^^^^  ^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `FieldMode`, `FieldSpec`, and `Grid2DField`
+    --> helix-physics/tests/relaxation_tests.rs:5447:36
+     |
+5447 |         use helix_physics::field::{FieldMode, FieldSpec, Grid2DField};
+     |                                    ^^^^^^^^^  ^^^^^^^^^  ^^^^^^^^^^^
+
+warning: unused import: `helix_physics::field_sector::FieldSectorManager`
+    --> helix-physics/tests/relaxation_tests.rs:5448:13
+     |
+5448 |         use helix_physics::field_sector::FieldSectorManager;
+     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `ConfigurationExclusionRelaxation`, `ConfigurationExclusionResult`, `InvariantMetricType`, `InvariantSet`, and `Invariant`
+    --> helix-physics/tests/relaxation_tests.rs:5449:35
+     |
+5449 | ...::{Invariant, InvariantSet, InvariantMetricType, ConfigurationExclusionRelaxation, ConfigurationExclusionResult};
+     |       ^^^^^^^^^  ^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `FieldMode`, `FieldSpec`, and `Grid2DField`
+    --> helix-physics/tests/relaxation_tests.rs:6156:36
+     |
+6156 |         use helix_physics::field::{FieldMode, FieldSpec, Grid2DField};
+     |                                    ^^^^^^^^^  ^^^^^^^^^  ^^^^^^^^^^^
+
+warning: unused import: `helix_physics::field_sector::FieldSectorManager`
+    --> helix-physics/tests/relaxation_tests.rs:6157:13
+     |
+6157 |         use helix_physics::field_sector::FieldSectorManager;
+     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `ConfigurationExclusionRelaxation`, `ConfigurationExclusionResult`, `InvariantMetricType`, `InvariantSet`, and `Invariant`
+    --> helix-physics/tests/relaxation_tests.rs:6158:35
+     |
+6158 | ...::{Invariant, InvariantSet, InvariantMetricType, ConfigurationExclusionRelaxation, ConfigurationExclusionResult};
+     |       ^^^^^^^^^  ^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `FieldMode`, `FieldSpec`, and `Grid2DField`
+    --> helix-physics/tests/relaxation_tests.rs:6436:36
+     |
+6436 |         use helix_physics::field::{FieldMode, FieldSpec, Grid2DField};
+     |                                    ^^^^^^^^^  ^^^^^^^^^  ^^^^^^^^^^^
+
+warning: unused import: `helix_physics::field_sector::FieldSectorManager`
+    --> helix-physics/tests/relaxation_tests.rs:6437:13
+     |
+6437 |         use helix_physics::field_sector::FieldSectorManager;
+     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `ConfigurationExclusionRelaxation`, `ConfigurationExclusionResult`, `InvariantMetricType`, `InvariantSet`, and `Invariant`
+    --> helix-physics/tests/relaxation_tests.rs:6438:35
+     |
+6438 | ...::{Invariant, InvariantSet, InvariantMetricType, ConfigurationExclusionRelaxation, ConfigurationExclusionResult};
+     |       ^^^^^^^^^  ^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `helix_physics::relaxation::DeterministicRelaxation`
+    --> helix-physics/tests/relaxation_tests.rs:6439:13
+     |
+6439 |         use helix_physics::relaxation::DeterministicRelaxation;
+     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `ConfigurationExclusionRelaxation` and `ConfigurationExclusionResult`
+    --> helix-physics/tests/relaxation_tests.rs:6523:81
+     |
+6523 | ...e, ConfigurationExclusionRelaxation, ConfigurationExclusionResult};
+     |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `FieldMode` and `Grid2DField`
+    --> helix-physics/tests/relaxation_tests.rs:8756:36
+     |
+8756 |         use helix_physics::field::{FieldMode, FieldSpec, Grid2DField};
+     |                                    ^^^^^^^^^             ^^^^^^^^^^^
+
+warning: unused import: `generate_initial_points`
+    --> helix-physics/tests/relaxation_tests.rs:8758:86
+     |
+8758 | ...st, boundary_search, generate_initial_points, Fixpoint};
+     |                         ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `Path`
+    --> helix-physics/tests/relaxation_tests.rs:9320:37
+     |
+9320 |                     use std::path::{Path, PathBuf};
+     |                                     ^^^^
+
+error[E0616]: field `field` of struct `DeterministicRelaxation` is private
+   --> helix-physics/tests/relaxation_tests.rs:861:32
+    |
+861 |         for y in 0..relaxation.field.height {
+    |                                ^^^^^ private field
+    |
+help: a method `field` also exists, call it with parentheses
+    |
+861 |         for y in 0..relaxation.field().height {
+    |                                     ++
+
+error[E0616]: field `field` of struct `DeterministicRelaxation` is private
+   --> helix-physics/tests/relaxation_tests.rs:862:36
+    |
+862 |             for x in 0..relaxation.field.width {
+    |                                    ^^^^^ private field
+    |
+help: a method `field` also exists, call it with parentheses
+    |
+862 |             for x in 0..relaxation.field().width {
+    |                                         ++
+
+error[E0616]: field `field` of struct `DeterministicRelaxation` is private
+   --> helix-physics/tests/relaxation_tests.rs:863:32
+    |
+863 |                 if !relaxation.field.is_obstacle(x, y) {
+    |                                ^^^^^ private field
+    |
+help: a method `field` also exists, call it with parentheses
+    |
+863 |                 if !relaxation.field().is_obstacle(x, y) {
+    |                                     ++
+
+error[E0624]: method `compute_flux` is private
+   --> helix-physics/tests/relaxation_tests.rs:864:47
+    |
+864 |                     let (jx, jy) = relaxation.compute_flux(x, y);
+    |                                               ^^^^^^^^^^^^ private method
+    |
+   ::: helix-physics/src/relaxation.rs:147:5
+    |
+147 |     fn compute_flux(&self, x: usize, y: usize) -> (f64, f64) {
+    |     -------------------------------------------------------- private method defined here
+
+error[E0282]: type annotations needed
+   --> helix-physics/tests/relaxation_tests.rs:865:30
+    |
+865 |                     total += (jx * jx + jy * jy).sqrt();
+    |                              ^^^^^^^^^^^^^^^^^^^ cannot infer type
+
+error[E0624]: method `compute_flux` is private
+   --> helix-physics/tests/relaxation_tests.rs:981:56
+    |
+981 | ...   let (jx, jy) = temp_relaxation.compute_flux(x, y);
+    |                                      ^^^^^^^^^^^^ private method
+    |
+   ::: helix-physics/src/relaxation.rs:147:5
+    |
+147 |     fn compute_flux(&self, x: usize, y: usize) -> (f64, f64) {
+    |     -------------------------------------------------------- private method defined here
+
+error[E0282]: type annotations needed
+   --> helix-physics/tests/relaxation_tests.rs:982:33
+    |
+982 |                         flux += (jx * jx + jy * jy).sqrt();
+    |                                 ^^^^^^^^^^^^^^^^^^^ cannot infer type
+
+warning: variable `prev_violation` is assigned to, but never used
+   --> helix-physics/tests/relaxation_tests.rs:186:13
+    |
+186 |         let mut prev_violation = relaxation.current_violation();
+    |             ^^^^^^^^^^^^^^^^^^
+    |
+    = note: consider using `_prev_violation` instead
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: value assigned to `prev_violation` is never read
+   --> helix-physics/tests/relaxation_tests.rs:199:13
+    |
+199 |             prev_violation = violation;
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+    = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
+
+warning: variable does not need to be mutable
+    --> helix-physics/tests/relaxation_tests.rs:2163:13
+     |
+2163 | ...   let mut global_field = Grid2DField::from_spec_with_mode(&spec,...
+     |           ----^^^^^^^^^^^^
+     |           |
+     |           help: remove this `mut`
+     |
+     = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: variable does not need to be mutable
+    --> helix-physics/tests/relaxation_tests.rs:2310:13
+     |
+2310 |         let mut overlap_energy = 0.0;
+     |             ----^^^^^^^^^^^^^^
+     |             |
+     |             help: remove this `mut`
+
+warning: unused variable: `sector0_id`
+    --> helix-physics/tests/relaxation_tests.rs:2191:13
+     |
+2191 |         let sector0_id = sector_manager.add_sector(vec![(barrier_x +...
+     |             ^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_sector0_id`
+
+warning: unused variable: `sector1_id`
+    --> helix-physics/tests/relaxation_tests.rs:2194:13
+     |
+2194 |         let sector1_id = sector_manager.add_sector(vec![(barrier_x +...
+     |             ^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_sector1_id`
+
+warning: variable does not need to be mutable
+    --> helix-physics/tests/relaxation_tests.rs:2639:13
+     |
+2639 | ...   let mut sector_fields = sector_manager.sector_fields.as_mut()....
+     |           ----^^^^^^^^^^^^^
+     |           |
+     |           help: remove this `mut`
+
+warning: unused variable: `total`
+    --> helix-physics/tests/relaxation_tests.rs:3104:13
+     |
+3104 |         let total = lambdas.len();
+     |             ^^^^^ help: if this is intentional, prefix it with an underscore: `_total`
+
+warning: unused variable: `density_before`
+    --> helix-physics/tests/relaxation_tests.rs:4682:17
+     |
+4682 |             let density_before = relaxation.field().get_density(test...
+     |                 ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_density_before`
+
+warning: unused variable: `iter1`
+    --> helix-physics/tests/relaxation_tests.rs:4846:18
+     |
+4846 |             let (iter1, excl1, metric1) = history1[i];
+     |                  ^^^^^ help: if this is intentional, prefix it with an underscore: `_iter1`
+
+warning: unused variable: `metric1`
+    --> helix-physics/tests/relaxation_tests.rs:4846:32
+     |
+4846 |             let (iter1, excl1, metric1) = history1[i];
+     |                                ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_metric1`
+
+warning: unused variable: `iter2`
+    --> helix-physics/tests/relaxation_tests.rs:4847:18
+     |
+4847 |             let (iter2, excl2, metric2) = history2[i];
+     |                  ^^^^^ help: if this is intentional, prefix it with an underscore: `_iter2`
+
+warning: unused variable: `metric2`
+    --> helix-physics/tests/relaxation_tests.rs:4847:32
+     |
+4847 |             let (iter2, excl2, metric2) = history2[i];
+     |                                ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_metric2`
+
+warning: variable does not need to be mutable
+    --> helix-physics/tests/relaxation_tests.rs:4961:13
+     |
+4961 | ...   let mut sector_fields = sector_manager.sector_fields.as_mut()....
+     |           ----^^^^^^^^^^^^^
+     |           |
+     |           help: remove this `mut`
+
+warning: variable does not need to be mutable
+    --> helix-physics/tests/relaxation_tests.rs:5074:13
+     |
+5074 | ...   let mut sector_fields2 = sector_manager2.sector_fields.as_mut(...
+     |           ----^^^^^^^^^^^^^^
+     |           |
+     |           help: remove this `mut`
+
+warning: unused variable: `field_n`
+    --> helix-physics/tests/relaxation_tests.rs:5381:38
+     |
+5381 | ...t (history_n, count_n, field_n, hash_n) = match &result_n {
+     |                           ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_field_n`
+
+warning: unused variable: `a`
+    --> helix-physics/tests/relaxation_tests.rs:6504:9
+     |
+6504 |         a: usize,
+     |         ^ help: if this is intentional, prefix it with an underscore: `_a`
+
+warning: unused variable: `b`
+    --> helix-physics/tests/relaxation_tests.rs:6505:9
+     |
+6505 |         b: usize,
+     |         ^ help: if this is intentional, prefix it with an underscore: `_b`
+
+warning: unused variable: `a_det`
+    --> helix-physics/tests/relaxation_tests.rs:6506:9
+     |
+6506 |         a_det: [((usize, usize), (usize, usize)); 2],
+     |         ^^^^^ help: if this is intentional, prefix it with an underscore: `_a_det`
+
+warning: unused variable: `b_det`
+    --> helix-physics/tests/relaxation_tests.rs:6507:9
+     |
+6507 |         b_det: [((usize, usize), (usize, usize)); 2],
+     |         ^^^^^ help: if this is intentional, prefix it with an underscore: `_b_det`
+
+warning: unused variable: `eps`
+    --> helix-physics/tests/relaxation_tests.rs:6519:9
+     |
+6519 |         eps: f64,
+     |         ^^^ help: if this is intentional, prefix it with an underscore: `_eps`
+
+warning: unused variable: `sector_idx`
+    --> helix-physics/tests/relaxation_tests.rs:6618:14
+     |
+6618 |         for (sector_idx, sector_field) in sector_fields.iter_mut().e...
+     |              ^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_sector_idx`
+
+warning: value assigned to `boundary_alpha` is never read
+    --> helix-physics/tests/relaxation_tests.rs:8979:42
+     |
+8979 |                 let mut boundary_alpha = None;
+     |                                          ^^^^
+     |
+     = help: maybe it is overwritten before being read?
+
+Some errors have detailed explanations: E0282, E0616, E0624.
+For more information about an error, try `rustc --explain E0282`.
+warning: `helix-physics` (test "relaxation_tests") generated 41 warnings
+error: could not compile `helix-physics` (test "relaxation_tests") due to 7 previous errors; 41 warnings emitted
+(base) ➜  helix git:(AHA/physics/new) ✗ 

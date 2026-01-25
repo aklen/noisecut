@@ -16,6 +16,7 @@ from .gcc import GccParser
 from .clang import ClangParser
 from .avr_gcc import AvrGccParser
 from .dotnet import DotNetParser
+from .rust import RustParser
 
 
 def register_all_compilers():
@@ -63,6 +64,17 @@ def register_all_compilers():
         project_files=['*.csproj', '*.sln', 'Directory.Build.props'],
         detection_keywords=['dotnet', 'msbuild', 'csc', 'net9.0', 'net8.0', 'net7.0'],
         command_patterns=['dotnet', 'msbuild', 'csc']
+    )
+    
+    # Rust (rustc/cargo)
+    register_compiler(
+        key='rust',
+        name='Rust Compiler',
+        parser_class=RustParser,
+        extensions=['.rs'],
+        project_files=['Cargo.toml', 'Cargo.lock'],
+        detection_keywords=['Compiling', 'cargo', 'rustc', '-->', 'error[E'],
+        command_patterns=['cargo', 'rustc']
     )
 
 

@@ -1,0 +1,53 @@
+(base) ➜  helix git:(main) ✗ cargo test --lib -p helix-core
+warning: profiles for the non root package will be ignored, specify profiles at the workspace root:
+package:   /Users/aklen/dev/helix/helix-poc-avr/Cargo.toml
+workspace: /Users/aklen/dev/helix/Cargo.toml
+   Compiling byteorder v1.5.0
+   Compiling heapless v0.8.0
+   Compiling stable_deref_trait v1.2.1
+   Compiling hash32 v0.3.1
+   Compiling helix-core v0.1.0 (/Users/aklen/dev/helix/helix-core)
+warning: unused variable: `actions`
+   --> helix-core/src/machine.rs:341:13
+    |
+341 |         let actions = hw.dispatch(HwEvent::Recheck);
+    |             ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_actions`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `actions`
+   --> helix-core/src/machine.rs:350:13
+    |
+350 |         let actions = safety.dispatch(SafetyEvent::ToggleRequest);
+    |             ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_actions`
+
+warning: `helix-core` (lib test) generated 2 warnings (run `cargo fix --lib -p helix-core --tests` to apply 2 suggestions)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.54s
+     Running unittests src/lib.rs (target/debug/deps/helix_core-5d82dcd66d50adb3)
+
+running 7 tests
+test machine::tests::test_button_decode_ambiguity ... ok
+test machine::tests::test_machine_runner_cross_layer ... ok
+test machine::tests::test_button_decode_holds ... ok
+test machine::tests::test_button_decode_tap ... ok
+test machine::tests::test_hw_sm_power_on ... ok
+test machine::tests::test_safety_requires_hw_ready ... ok
+test machine::tests::test_hw_sm_not_ready ... FAILED
+
+failures:
+
+---- machine::tests::test_hw_sm_not_ready stdout ----
+
+thread 'machine::tests::test_hw_sm_not_ready' (4202233) panicked at helix-core/src/machine.rs:342:9:
+assertion `left == right` failed
+  left: PowerOff
+ right: NotReady
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    machine::tests::test_hw_sm_not_ready
+
+test result: FAILED. 6 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p helix-core --lib`
