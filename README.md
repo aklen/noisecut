@@ -2,14 +2,14 @@
 
 Cut through compiler noise. See what really matters.
 
-A Python build output analyzer for C/C++/.NET that groups warnings by severity and category, making critical issues immediately visible.
+A Python build output analyzer for C/C++/.NET/Rust that groups warnings by severity and category, making critical issues immediately visible.
 
 ## Features
 
 - **Smart Grouping** - Groups warnings by category (e.g., all "unused parameter" warnings together)
 - **Severity Classification** - 5-level system (INFO→LOW→MEDIUM→HIGH→CRITICAL) with 100+ warning types
 - **Visual Priority** - Critical warnings at bottom in red, no scrolling needed
-- **Auto-Detection** - Recognizes GCC, Clang, AVR-GCC, .NET/MSBuild automatically
+- **Auto-Detection** - Recognizes GCC, Clang, AVR-GCC, .NET/MSBuild, Rust automatically
 - **Extensible** - Add new compilers in ~3 lines via registry system
 - **Parse Anywhere** - Works with live builds, saved logs, CI/CD output
 - **Zero Dependencies** - Pure Python 3.7+ stdlib
@@ -30,11 +30,19 @@ pip install --user git+https://github.com/aklen/noisecut.git
 # Parse saved build log
 ncut -f build_output.txt
 
-# Live build
+# Live build (C/C++)
 make 2>&1 | ncut
+
+# Live build (Rust)
+cargo build 2>&1 | ncut
+cargo test 2>&1 | ncut
 
 # With options
 ncut -f build.log --max-locations 20 --no-severity
+
+# Filter by severity
+make 2>&1 | ncut --errors-only          # Only errors
+cargo build 2>&1 | ncut --min-level high  # HIGH+ warnings and errors
 ```
 
 ## Example Output
@@ -71,13 +79,15 @@ Issues sorted least→most important, **critical at bottom**:
 ```bash
 ncut [options] [target]
 
-  -f FILE              Parse from file instead of live build
+  -f FILE              Parse from file or stdin pipe
   -v, --verbose        Show full compiler output
   -j JOBS              Parallel jobs (default: 8)
-  --clean              Clean before build
+  --clean              Clean before building
   --max-locations N    Show N locations per issue (default: 5)
   --no-severity        Disable severity badges
-  --parser TYPE        Force parser: gcc, clang, avr-gcc (default: auto)
+  --errors-only        Show only errors, suppress warnings
+  --min-level LEVEL    Minimum severity: info/low/medium/high/critical/error
+  --parser TYPE        Force parser: gcc, clang, avr-gcc, dotnet, rust (default: auto)
 ```
 
 ## Comparison vs Standard Make
@@ -90,6 +100,8 @@ ncut [options] [target]
 | Color badges | ❌ | ✅ |
 | Auto-detect compiler | ❌ | ✅ |
 | Parse make/bullet format | ❌ | ✅ |
+| Severity filtering | ❌ | ✅ |
+| Stdin/pipe support | ✅ | ✅ |
 
 ## Testing
 
