@@ -213,6 +213,18 @@ def main():
         action='store_true',
         help='Disable severity level display for warnings'
     )
+    parser.add_argument(
+        '--errors-only',
+        action='store_true',
+        help='Show only errors, suppress warnings'
+    )
+    parser.add_argument(
+        '--min-level',
+        type=str,
+        choices=['info', 'low', 'medium', 'high', 'critical', 'error'],
+        default=None,
+        help='Minimum severity level to display (info/low/medium/high/critical/error)'
+    )
     
     # Dynamically get available compilers from registry
     available_compilers = ['auto'] + list_compilers()
@@ -274,13 +286,56 @@ def main():
             command, args.verbose, parser_instance
         )
     
+    # Filter issues by level if requested
+    filtered_issues = issues
+    
+    if args.errors_only:
+        # Only show errors
+        filtered_issues = [issue for issue in issues if issue.type in ['error', 'linker-error']]
+    elif args.min_level:
+        # Filter by minimum severity level
+        from .severity import get_severity, Severity
+        
+        level_order = {
+            'info': 0,
+            'low': 1,
+            'medium': 2,
+            'high': 3,
+            'critical': 4,
+            'error': 5
+        }
+        
+        severity_to_level = {
+            Severity.INFO: 0,
+            Severity.LOW: 1,
+            Severity.MEDIUM: 2,
+            Severity.HIGH: 3,
+            Severity.CRITICAL: 4
+        }
+        
+        min_level_value = level_order[args.min_level]
+        
+        if args.min_level == 'error':
+            # Only errors
+            filtered_issues = [issue for issue in issues if issue.type in ['error', 'linker-error']]
+        else:
+            # Filter warnings by severity, always include errors
+            filtered_issues = []
+            for issue in issues:
+                if issue.type in ['error', 'linker-error']:
+                    filtered_issues.append(issue)
+                elif issue.category:
+                    severity = get_severity(issue.category)
+                    if severity and severity_to_level.get(severity, 0) >= min_level_value:
+                        filtered_issues.append(issue)
+    
     # Print issues if any
-    if issues:
-        print(f"\n{Color.BOLD}{'=' * 60}{Color.NC}")
+    if filtered_issues:
+        print(f"{Color.BOLD}{'=' * 60}{Color.NC}")
         print(f"{Color.BOLD}Issue Summary{Color.NC}")
         print(f"{Color.BOLD}{'=' * 60}{Color.NC}")
         
-        grouped = group_issues(issues)
+        grouped = group_issues(filtered_issues)
         print_issue_summary(grouped, args.max_locations, show_severity=not args.no_severity)
     
     # Print statistics
